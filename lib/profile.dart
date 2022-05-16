@@ -1,197 +1,289 @@
 import 'package:flutter/material.dart';
 import 'package:iot_app/constants/constants.dart';
-import 'package:iot_app/widgets/button_widget.dart';
-import 'package:http/http.dart' as http;
 
-class ProfileScreen extends StatelessWidget {
-  late List data;
-  var idClient;
-  var _isLoading = false;
+import 'package:shared_preferences/shared_preferences.dart';
 
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
 
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
 
-  //Get Client Data from the API after successful login
-  // ignore: missing_return
-  // Future<String> loginData (String id) async {
-  //   var response = await http.get(
-  //     Uri.encodeFull("$apiUrl/api/client/$id"),
-  //     headers: {"Accept": "application/json"});
-      
-  //   setState ( () {
-  //     _isLoading = true;
-  //     var convertDataToJson = json.decode ( response.body );
-  //     data = convertDataToJson['result'];
-  //     if (data != null) {
-  //       firstName = data[0]['fullname'];
-  //       phoneNumber = data[0] ['phone_number'];
-  //       email = data[0]['email'];
-  //       avi = data[0]['avatar'];
-  //     }
-  //     print ( data );
-  //   } );
-  //   return "Success!";
+class _ProfileScreenState extends State<ProfileScreen> {
+  late ThemeData theme;
 
-  // }
+  //bool isLoading = false;
+  bool isLoggedIn = false;
+  bool isAdmin = false;
+  bool isUser = false;
+  bool isGuest = false;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   setState(() {
-  //     loginData(widget.idClient);
-  //   });
-  // }
+  bool isNotification = true;
 
-  AppBar buildAppBar() {
-    return AppBar(
-      elevation: 0.70,
-      centerTitle: true,
-      backgroundColor: kMainAppColor,
-      title: const Text(
-        "Account",
-        style: TextStyle(
-          color: kTextColor,
-        ),
-      ),
-      actions: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.edit,
-            color: kTextColor,
-          ),
-          // icon: SvgPicture.asset(
-          //   SvgImages.edit,
-          //   color: AppColors.baseBlackColor,
-          //   width: 25,
-          // ),
-        )
-      ],
-      shadowColor: kMainAppColor.withOpacity(0.10),
-    );
+  String name = '';
+  String email = '';
+
+  @override
+  void initState() {
+    super.initState();
+    //isLoading = true;
+    isLoggedIn = false;
+    isAdmin = false;
+    isUser = false;
+    isGuest = false;
+    isNotification = true;
+    getUser();
+    //get shared preferences
+    _getSharedPreferences();
   }
 
-  Widget buildlistTileWidget({String? leading, required String trailing}) {
-    return ListTile(
-      tileColor: kTextColor,
-      leading: Text(
-        leading ?? "",
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      trailing: Text(
-        trailing,
-        style: const TextStyle(
-          fontSize: 16,
-        ),
-      ),
-    );
+  Future<void> getUser() async {
+    // var response = await http.get(Constants.baseUrl + 'user/getUser');
+    // if (response.statusCode == 200) {
+    //   var data = json.decode(response.body);
+    //   if (data['status'] == 'success') {
+    //     setState(() {
+    //       isLoading = false;
+    //       isLoggedIn = true;
+    //       isAdmin = data['data']['isAdmin'];
+    //       isUser = data['data']['isUser'];
+    //       isGuest = data['data']['isGuest'];
+    //     });
+    //   } else {
+    //     setState(() {
+    //       isLoading = false;
+    //       isLoggedIn = false;
+    //       isAdmin = false;
+    //       isUser = false;
+    //       isGuest = false;
+    //     });
+    //   }
+    // } else {
+    //   setState(() {
+    //     isLoading = false;
+    //     isLoggedIn = false;
+    //     isAdmin = false;
+    //     isUser = false;
+    //     isGuest = false;
+    //   });
+    // }
   }
 
-  Widget buildBottomListTile({String? leading, String? trailing}) {
-    return ListTile(
-      onTap: () {},
-      tileColor: kSubTextColor,
-      leading: Text(
-        leading!,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      trailing: Wrap(
-        spacing: 5,
-        children: [
-          Text(
-            trailing!,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 20,
-            ),
-          ),
-          const Icon(
-            Icons.arrow_forward_ios_outlined,
-            size: 20,
-          ),
-        ],
-      ),
-    );
+  void _getSharedPreferences() async {
+    //get shared preferences
+    var prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isNotification = prefs.getBool('notification') ?? true;
+      //get name and email
+      name = prefs.getString('name') ?? '';
+      email = prefs.getString('email') ?? '';
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: kMainAppColor,
-      appBar: buildAppBar(),
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        children: [
-          Container(
-            height: 200,
-            margin: const EdgeInsets.only(bottom: 10),
-            color: kTextColor,
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const [
-                  Center(
-                    child: CircleAvatar(
-                      radius: 35,
-                      backgroundColor: Colors.transparent,
-                      backgroundImage: NetworkImage(
-                          "https://i.pinimg.com/originals/7b/48/65/7b48654b92587f3df86c21d7071bad42.jpg"),
+    return Theme(
+        data: theme.copyWith(
+            colorScheme: theme.colorScheme
+                .copyWith(secondary: kTextColor.withAlpha(40))),
+        child: SafeArea(
+            child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Profile'),
+            centerTitle: true,
+          ),
+
+          //body
+          body: ListView(
+            padding: const EdgeInsets.fromLTRB(24, 36, 24, 24),
+            children: [
+              Container(
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: Image(
+                        //get  image from shared preferences if available otherwise use default image
+                        image: AssetImage(name == ''
+                            ? 'assets/images/user.png'
+                            : 'assets/images/user.png'),
+
+                        height: 100,
+                        width: 100,
+                      ),
                     ),
-                  ),
-                  Text(
-                    "zuser",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    const SizedBox(
+                      width: 16,
                     ),
-                  ),
-                  Text(
-                    "zlocation",
-                    textAlign: TextAlign.center,
-                  )
-                ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name == '' ? 'Guest' : name,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Text(
+                            email == '' ? 'Guest' : email,
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          //Edit button
+
+                          OutlinedButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/editProfile');
+                            },
+                            child: const Text(
+                              'Edit Profile',
+                              style: TextStyle(color: kTextColor),
+                            ),
+                            style: ButtonStyle(
+                              padding: MaterialStateProperty.all<EdgeInsets>(
+                                  const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 16)),
+                              shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              )),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+        
+                  ],
+                ),
               ),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(bottom: 20),
-            color: kTextColor,
-            child: Column(
-              children: [
-                buildlistTileWidget(
-                    leading: "Full name", trailing: "user"),
-                const Divider(),
-                buildlistTileWidget(
-                  leading: "Email",
-                  trailing: "johndoe@gmail.com",
-                ),
-                const Divider(),
-                buildlistTileWidget(
-                  leading: "Address",
-                  trailing: "123123",
-                ),
-                const Divider(),
+              const SizedBox(
+                height: 24,
+              ),
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Options",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    SwitchListTile(
+                      dense: true,
+                      //contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      inactiveTrackColor: kGreenColor.withAlpha(40),
+                      activeTrackColor: kGreenColor,
+                      activeColor: kGreenColor,
 
-              ],
-            ),
-          ),
+                      title: const Text(
+                        'Notifications',
+                        style: TextStyle(letterSpacing: 0),
+                      ),
+                      onChanged: (bool value) {
+                        setState(() {
+                          isNotification = value;
+                        });
+                      },
 
-          Container(
-            margin: const EdgeInsets.all(20.0),
-            child: MyButtonWidget(
-              text: "Log Out", 
-              color: kMainAppColor, 
-              onPress: () {},
-            )
+                      value: isNotification,
+                    ),
+                    const Divider(
+                      thickness: 1,
+                      height: 1,
+                      //color: kTextColor.withAlpha(40),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    const Text(
+                      "Account",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    ListTile(
+                      dense: true,
+                      visualDensity: VisualDensity.compact,
+                      //contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      title: const Text(
+                        'Personal Information',
+                        style: TextStyle(letterSpacing: 0),
+                      ),
+                      trailing: const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: kTextColor,
+                      ),
+                      onTap: () {
+                        //logout
+                        //Navigator.pushNamed(context, '/login');
+                      },
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Center(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          //logout
+                          //Navigator.pushNamed(context, '/login');
+                        },
+                        child: const Text(
+                          'Logout',
+                          style: TextStyle(color: kTextColor),
+                        ),
+                        style: ButtonStyle(
+                          padding: MaterialStateProperty.all<EdgeInsets>(
+                              const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16)),
+                          shape:
+                              MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          )),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+              Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        //icon
+                        Icon(
+                          Icons.info,
+                          color: kTextColor,
+                          size: 24,
+                        ),
+                        SizedBox(
+                          width: 14,
+                        ),
+                        //text
+                        Text(
+                          "Feel Free to contact us",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: kTextColor,
+                          ),
+                        )
+                      ]))
+            ],
           ),
-        ],
-      ),
-    );
+        )));
   }
 }

@@ -43,3 +43,12 @@ const String kAppLogo = "assets/appLogo.png";
 const double kTextFieldRadius = 8.0;
 const double devicesContainerRadius = 10;
 const double kChipRadius = 5;
+
+//--------------------------------------  Custom App Theme ----------------------------------------//
+class CustomTheme {
+  //--------------------------------------  Custom App Theme ----------------------------------------//
+
+  static final CustomTheme lightCustomTheme = CustomTheme();
+
+  static final CustomTheme darkCustomTheme = CustomTheme();
+}
