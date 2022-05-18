@@ -13,6 +13,8 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:fluttertoast/fluttertoast.dart';
+
 class Devices extends StatefulWidget {
   @override
   _DevicesState createState() => _DevicesState();
@@ -48,7 +50,7 @@ class _DevicesState extends State<Devices> {
   //get devices from the server
   Future<List<DeviceData>> fetchDevices() async {
     final response = await Dio().get(
-      'https://6087-105-162-29-38.eu.ngrok.io/devices/all',
+      'https://50f0-138-199-60-167.ap.ngrok.io/devices/all',
     );
     if (response.statusCode == 200) {
       List<DeviceData> devices = [];
@@ -74,6 +76,8 @@ class _DevicesState extends State<Devices> {
     fetchDevices().then((value) {
       setState(() {
         _devices.addAll(value);
+        
+        //textEdingcontroller according to specific device using indec
 
         frequencyControllerLane1.text = _devices[0].lane1;
         frequencyControllerLane2.text = _devices[0].lane2;
@@ -354,7 +358,6 @@ class _DevicesState extends State<Devices> {
                                                       for (int i = 0;
                                                           i < _devices.length;
                                                           i++) {
-
                                                         if (i == index) {
                                                           _devices[i].enable_2 =
                                                               value;
@@ -422,7 +425,6 @@ class _DevicesState extends State<Devices> {
                                                                     _devices
                                                                         .length;
                                                                 i++) {
-
                                                               if (i == index) {
                                                                 _devices[i]
                                                                         .enable_3 =
@@ -442,7 +444,8 @@ class _DevicesState extends State<Devices> {
                                                           // updateState();
                                                           client.subscribe(
                                                               topic2,
-                                                              MqttQos.atLeastOnce);
+                                                              MqttQos
+                                                                  .atLeastOnce);
                                                         })),
                                                 //CupertinoSwitch to enable/disable the lane 1
                                               ],
@@ -482,33 +485,23 @@ class _DevicesState extends State<Devices> {
                                                       //updateStat(value, index);
 
                                                       for (int i = 0;
-                                                          i <
-                                                              _devices
-                                                                  .length;
+                                                          i < _devices.length;
                                                           i++) {
                                                         if (i == index) {
-                                                          _devices[i]
-                                                              .enable_4 =
+                                                          _devices[i].enable_4 =
                                                               value;
-                                                          _devices[i]
-                                                              .enable_2 =
+                                                          _devices[i].enable_2 =
                                                               false;
-                                                          _devices[i]
-                                                              .enable_1 =
+                                                          _devices[i].enable_1 =
                                                               false;
-                                                          _devices[i]
-                                                              .enable_3 =
+                                                          _devices[i].enable_3 =
                                                               false;
                                                         }
                                                       }
                                                     });
 
-                                                    client.subscribe(
-                                                        topic3,
+                                                    client.subscribe(topic3,
                                                         MqttQos.atLeastOnce);
-                                                    
-
-
                                                   },
                                                 )),
                                                 //CupertinoSwitch to enable/disable the lane 1
@@ -586,8 +579,8 @@ class _DevicesState extends State<Devices> {
                                                       //send the data to the server via rest api that the device is connected
                                                       deviceConnected(
                                                           _devices[index]
-                                                              .deviceId, userId);
-                                  
+                                                              .deviceId,
+                                                          userId);
                                                     },
                                                   ),
                                                 ),
@@ -720,7 +713,7 @@ class _DevicesState extends State<Devices> {
         }
       }
       // if (i == index) {
-      //   if ( _devices[i].enable_1 = value) {        
+      //   if ( _devices[i].enable_1 = value) {
       //     _devices[i].enable_2 = false;
       //     _devices[i].enable_3 = false;
       //     _devices[i].enable_4 = false;
@@ -736,7 +729,7 @@ class _DevicesState extends State<Devices> {
       //     _devices[i].enable_1 = value;
       //     _devices[i].enable_2 = false;
       //     _devices[i].enable_3 = false;
-      //   } 
+      //   }
 
       // }
 
@@ -750,78 +743,69 @@ class _DevicesState extends State<Devices> {
     }
   }
 }
-Future<int> deviceConnected(int deviceId, int userId)  async{
+
+Future<String> deviceConnected(String deviceId, String userId) async {
   final response = await Dio().post(
-        'https://6087-105-162-29-38.eu.ngrok.io/devices/connected',
-        data: {
-          'device': deviceId,
-          'user': userId,
-        },
+    'https://50f0-138-199-60-167.ap.ngrok.io/devices/connected',
+    data: {
+      'device': deviceId,
+      'user': userId,
+    },
+  );
+  print(response.data);
 
+  switch (response.statusCode) {
+    case 200:
+
+      //show Scaffold that the device is connected
+      Fluttertoast.showToast(
+        msg: "Device Connected",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
       );
-      print(response.data);
 
-    switch (response.statusCode) {
-      case 200:
-        
-        //show Scaffold that the device is connected
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text('Device Connected'),
-        ));
-        return response.data;
-        break;
-      case 400:
-        return response.data;
-        break;
-      case 500:
-        return response.data;
-        break;
-      default:
-        return response.data;
-    }
-  
-    switch (response.data) {
-      case 1:
-        return 1;
-        break;
-      case 2:
-        return 2;
-        break;
-      case 3:
-        return 3;
-        break;
-      case 4:
-        return 4;
-        break;
-      default:
-        return 0;
-    }
-
-      
-      
-   
-}
-
-   
-   
-  //connect the device to the network
-  // await client.connect(
-  //     host: 'mqtt.eclipse.org',
-  //     port: 1883,
-  //     clientId: deviceId,
-  //     username: 'admin',
-  //     password: 'admin',
-  //     onConnectionStatusChanged: (status) {
-  //       print(status);
-  //     },
-  //     onConnected: () {
-  //       print('connected');
-  //     },
-  //     onDisconnected: (disco) {
-  //       print('disconnected');
-  //     });
-
-   
+      return response.data;
+      break;
+    case 400:
+      Fluttertoast.showToast(
+        msg: "Device not connected",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return response.data;
+      break;
+    case 500:
+      Fluttertoast.showToast(
+        msg: "Server Error",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return response.data;
+      break;
+    default:
+      Fluttertoast.showToast(
+        msg: "Server Error",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return response.data;
+  }
 }
 
 // function to change enable_1, enable_2, enable_3 and enable_4 to false if enable_1 is true,

@@ -62,7 +62,7 @@ void onConnected() {
 }
 
 void onDisconnected() {
-  print('Disconnected');
+  
 }
 
 void onSubscribed(String topic) {
