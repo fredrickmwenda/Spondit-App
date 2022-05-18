@@ -290,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
       //use dio to make the request
       await Dio()
           .post(
-        "https://b054-41-80-108-154.eu.ngrok.io/user/login",
+        "https://6087-105-162-29-38.eu.ngrok.io/user/login",
         data: data,
       )
           .then((response) async {
@@ -304,6 +304,7 @@ class _LoginScreenState extends State<LoginScreen> {
           prefs.setString("token", response.data["access_token"]);
           prefs.setString("email", response.data["email"]);
           prefs.setString("name", response.data["full_name"]);
+          prefs.setString("userId", response.data["id"]);
           Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(

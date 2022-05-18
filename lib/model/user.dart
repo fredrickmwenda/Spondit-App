@@ -1,4 +1,5 @@
 class User {
+  final String id;
   final String fullName;
   final String email;
   final String accessToken;
@@ -10,10 +11,11 @@ class User {
 
 
 
-  User(this.fullName,  this.email, 
+  User(this.id,this.fullName,  this.email, 
       this.refreshToken, this.password, this.accessToken, );
   
   User.fromJson(Map<String, dynamic> json):
+    id = json['user_id'],
     fullName = json['full_name'],
     email = json['email'],
     password = json['password'],
@@ -22,6 +24,7 @@ class User {
 
   Map<String, dynamic> toJson() =>
     {
+      'user_id': id,
       'full_name': fullName,
       'email': email,
       'password': password,

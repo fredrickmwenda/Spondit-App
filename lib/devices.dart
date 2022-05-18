@@ -14,72 +14,30 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Devices extends StatefulWidget {
-  //Devices({Key? key, required this.title}) : super(key: key);
-  //devices are retrieved frm the DeviceData Model
-  // final String deviceName;
-  // final bool deviceStatus;
-  // final bool enable_1;
-  // final bool enable_2;
-  // final bool enable_3;
-  // final bool enable_4;
-  // final int deviceId;
-  // final String deviceType;
-  // final String lane1;
-  // final String lane2;
-  // final String lane3;
-  // final String lane4;
-  // final double latitude;
-  // final double longitude;
-  // final String deviceDescription;
-  // final String deviceImages;
-  // final DateTime deviceCreatedAt;
-  // final DateTime deviceUpdatedAt;
-  // final String state;
-  // final String city;
-
-  // Devices({
-  //   Key? key,
-  //   required this.deviceName,
-  //   required this.deviceStatus,
-  //   required this.enable_1,
-  //   required this.enable_2,
-  //   required this.enable_3,
-  //   required this.enable_4,
-  //   required this.deviceId,
-  //   required this.deviceType,
-  //   required this.lane1,
-  //   required this.lane2,
-  //   required this.lane3,
-  //   required this.lane4,
-  //   required this.latitude,
-  //   required this.longitude,
-  //   required this.deviceDescription,
-  //   required this.deviceImages,
-  //   required this.deviceCreatedAt,
-  //   required this.deviceUpdatedAt,
-  //   required this.state,
-  //   required this.city,
-  // }) : super(key: key);
-
   @override
   _DevicesState createState() => _DevicesState();
 }
 
 class _DevicesState extends State<Devices> {
   //lanes TextEditingController
-  TextEditingController _lane1Controller = TextEditingController();
-  TextEditingController _lane2Controller = TextEditingController();
-  TextEditingController _lane3Controller = TextEditingController();
-  TextEditingController _lane4Controller = TextEditingController();
+  TextEditingController frequencyControllerLane1 = TextEditingController();
+  TextEditingController frequencyControllerLane2 = TextEditingController();
+  TextEditingController frequencyControllerLane3 = TextEditingController();
+  TextEditingController frequencyControllerLane4 = TextEditingController();
 
   //get access token from shared preferences
   String accessToken = "";
+  String userId = "";
 
   // Future List of  devices with  null check
 
   final List<DeviceData> _devices = [];
   var topic = "topic/test";
-  MqttClient client = MqttServerClient.withPort('broker.emqx.io', 'flutter_client', 1883);
+  var topic1 = "topic/test1";
+  var topic2 = "topic/test2";
+  var topic3 = "topic/test3";
+  MqttClient client =
+      MqttServerClient.withPort('broker.emqx.io', 'flutter_client', 1883);
 
   void _publish(String message) {
     final builder = MqttClientPayloadBuilder();
@@ -90,7 +48,7 @@ class _DevicesState extends State<Devices> {
   //get devices from the server
   Future<List<DeviceData>> fetchDevices() async {
     final response = await Dio().get(
-      'https://b054-41-80-108-154.eu.ngrok.io/devices/all',
+      'https://6087-105-162-29-38.eu.ngrok.io/devices/all',
     );
     if (response.statusCode == 200) {
       List<DeviceData> devices = [];
@@ -116,6 +74,11 @@ class _DevicesState extends State<Devices> {
     fetchDevices().then((value) {
       setState(() {
         _devices.addAll(value);
+
+        frequencyControllerLane1.text = _devices[0].lane1;
+        frequencyControllerLane2.text = _devices[0].lane2;
+        frequencyControllerLane3.text = _devices[0].lane3;
+        frequencyControllerLane4.text = _devices[0].lane4;
       });
     });
 
@@ -127,11 +90,21 @@ class _DevicesState extends State<Devices> {
     _loadAccessToken();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    frequencyControllerLane1.dispose();
+    frequencyControllerLane2.dispose();
+    frequencyControllerLane3.dispose();
+    frequencyControllerLane4.dispose();
+  }
+
   //load the access token from shared preferences
   _loadAccessToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       accessToken = prefs.getString('access_token') ?? "";
+      userId = prefs.getString('user_id') ?? "";
     });
   }
 
@@ -210,7 +183,7 @@ class _DevicesState extends State<Devices> {
                 itemBuilder: (context, index) {
                   return Container(
                     padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                    height: 350,
+                    height: 400,
                     width: double.maxFinite,
                     child: Card(
                       elevation: 5,
@@ -286,6 +259,7 @@ class _DevicesState extends State<Devices> {
                                             const SizedBox(
                                               height: 5,
                                             ),
+
                                             Row(
                                               children: <Widget>[
                                                 const Text(
@@ -295,6 +269,20 @@ class _DevicesState extends State<Devices> {
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
+
+                                                Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5.0),
+                                                        //get data of the lane 3 from the models  and display  it in TextField
+                                                        child: TextField(
+                                                          controller:
+                                                              frequencyControllerLane3,
+                                                          keyboardType:
+                                                              TextInputType
+                                                                  .number,
+                                                        ))),
                                                 Expanded(
                                                     //
                                                     child: CupertinoSwitch(
@@ -302,11 +290,26 @@ class _DevicesState extends State<Devices> {
                                                       _devices[index].enable_1,
                                                   onChanged: (bool value) {
                                                     setState(() {
-                                                      _devices[index].enable_1 =
-                                                          value;
+                                                      //updateStat(value, index);
+                                                      for (int i = 0;
+                                                          i < _devices.length;
+                                                          i++) {
+                                                        if (i == index) {
+                                                          _devices[i].enable_1 =
+                                                              value;
+                                                          _devices[i].enable_2 =
+                                                              false;
+                                                          _devices[i].enable_3 =
+                                                              false;
+                                                          _devices[i].enable_4 =
+                                                              false;
+                                                        }
+                                                      }
                                                     });
                                                     // state
-                                                    client.subscribe(topic, MqttQos.atLeastOnce);
+                                                    // updateState();
+                                                    client.subscribe(topic,
+                                                        MqttQos.atLeastOnce);
                                                   },
                                                 )),
                                                 //CupertinoSwitch to enable/disable the lane 1
@@ -325,6 +328,21 @@ class _DevicesState extends State<Devices> {
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
+
+                                                Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5.0),
+                                                        //get data of the lane 3 from the models  and display  it in TextField
+                                                        child: TextField(
+                                                          controller:
+                                                              frequencyControllerLane3,
+                                                          // decoration: const InputDecoration(
+                                                          //   hintText: '_devices[index].lane3',
+                                                          //   border: InputBorder.none,
+                                                          // ),
+                                                        ))),
                                                 Expanded(
                                                     //
                                                     child: CupertinoSwitch(
@@ -332,9 +350,26 @@ class _DevicesState extends State<Devices> {
                                                       _devices[index].enable_2,
                                                   onChanged: (bool value) {
                                                     setState(() {
-                                                      _devices[index].enable_2 =
-                                                          value;
+                                                      //updateStat(value, index);
+                                                      for (int i = 0;
+                                                          i < _devices.length;
+                                                          i++) {
+
+                                                        if (i == index) {
+                                                          _devices[i].enable_2 =
+                                                              value;
+                                                          _devices[i].enable_1 =
+                                                              false;
+                                                          _devices[i].enable_3 =
+                                                              false;
+                                                          _devices[i].enable_4 =
+                                                              false;
+                                                        }
+                                                      }
                                                     });
+
+                                                    client.subscribe(topic1,
+                                                        MqttQos.atLeastOnce);
                                                   },
                                                 )),
                                                 //CupertinoSwitch to enable/disable the lane 1
@@ -354,25 +389,61 @@ class _DevicesState extends State<Devices> {
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                Expanded(
-                                                  //
-                                                  child: CupertinoSwitch(
-                                                    value: _devices[index]
-                                                        .enable_3,
-                                                    onChanged: (bool value) {
-                                                      setState(() {
-                                                        _devices[index]
-                                                            .enable_3 = value;
+                                                Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5.0),
+                                                        //get data of the lane 3 from the models  and display  it in TextField
 
-                                                        // if the user wants to enable_1, then enable_2 and enabled_3 and enable_4 will be  set to false
-                                                        // if the user wants to enable_2, then enable_1 and enabled_3 and enable_4 will be  set to false
-                                                        // if the user wants to enable_3, then enable_1 and enable_2 and enabled_4 will be  set to false
-                                                        // if the user wants to enable_4, then enable_1 and enable_2 and enable_3 will be  set to false
-                                                        // use switch case to enable/disable the lanes
-                                                      });
-                                                    },
-                                                  ),
-                                                ),
+                                                        child: TextField(
+                                                          controller:
+                                                              frequencyControllerLane3,
+
+                                                          // decoration: InputDecoration(
+                                                          //   border: OutlineInputBorder(),
+                                                          //   labelText: 'Lane 3',
+                                                          // ),
+                                                        ))),
+
+                                                Expanded(
+                                                    //
+                                                    child: CupertinoSwitch(
+                                                        value: _devices[index]
+                                                            .enable_3,
+                                                        onChanged:
+                                                            (bool value) {
+                                                          setState(() {
+                                                            // updateStat(
+                                                            //     value, index);
+
+                                                            for (int i = 0;
+                                                                i <
+                                                                    _devices
+                                                                        .length;
+                                                                i++) {
+
+                                                              if (i == index) {
+                                                                _devices[i]
+                                                                        .enable_3 =
+                                                                    value;
+                                                                _devices[i]
+                                                                        .enable_2 =
+                                                                    false;
+                                                                _devices[i]
+                                                                        .enable_1 =
+                                                                    false;
+                                                                _devices[i]
+                                                                        .enable_4 =
+                                                                    false;
+                                                              }
+                                                            }
+                                                          });
+                                                          // updateState();
+                                                          client.subscribe(
+                                                              topic2,
+                                                              MqttQos.atLeastOnce);
+                                                        })),
                                                 //CupertinoSwitch to enable/disable the lane 1
                                               ],
                                             ),
@@ -390,6 +461,17 @@ class _DevicesState extends State<Devices> {
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
+                                                Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5.0),
+                                                        //get data of the lane 3 from the models  and display  it in TextField
+
+                                                        child: TextField(
+                                                          controller:
+                                                              frequencyControllerLane4,
+                                                        ))),
                                                 Expanded(
                                                     //
                                                     child: CupertinoSwitch(
@@ -397,35 +479,36 @@ class _DevicesState extends State<Devices> {
                                                       _devices[index].enable_4,
                                                   onChanged: (bool value) {
                                                     setState(() {
-                                                      // _devices[index].enable_4 =
-                                                      //     value;
-                                                      // if enable_3 is true set enable_4 to false or if enable_2 is true set enable_4 to false
-                                                      if (_devices[index]
-                                                              .enable_3 ==
-                                                          true) {
-                                                        _devices[index]
-                                                            .enable_4 = false;
-                                                      }
-                                                      if (_devices[index]
-                                                              .enable_2 ==
-                                                          true) {
-                                                        _devices[index]
-                                                            .enable_4 = false;
-                                                      }
+                                                      //updateStat(value, index);
 
-                                                      if (_devices[index]
-                                                              .enable_1 ==
-                                                          true) {
-                                                        _devices[index]
-                                                            .enable_4 = false;
-                                                      }
-                                                      //otherwise set enable_4 to its original value (true or false) depending on the value of enable_3 , enable_2  and enable_1 respectively
-                                                      // but  if enable_4 is set by the user to true , then set enable_3, enable_2 and enable_4 to false
-                                                      else {
-                                                        _devices[index]
-                                                            .enable_4 = value;
+                                                      for (int i = 0;
+                                                          i <
+                                                              _devices
+                                                                  .length;
+                                                          i++) {
+                                                        if (i == index) {
+                                                          _devices[i]
+                                                              .enable_4 =
+                                                              value;
+                                                          _devices[i]
+                                                              .enable_2 =
+                                                              false;
+                                                          _devices[i]
+                                                              .enable_1 =
+                                                              false;
+                                                          _devices[i]
+                                                              .enable_3 =
+                                                              false;
+                                                        }
                                                       }
                                                     });
+
+                                                    client.subscribe(
+                                                        topic3,
+                                                        MqttQos.atLeastOnce);
+                                                    
+
+
                                                   },
                                                 )),
                                                 //CupertinoSwitch to enable/disable the lane 1
@@ -498,16 +581,13 @@ class _DevicesState extends State<Devices> {
                                                         //         .deviceStatus =
                                                         //         true;
                                                         //   });
-                                                        });
-                                                      //connect the device to mqtt broker
-                                                      // connectDevice(
-                                                      //     _devices[index]
-                                                      //         .deviceId
-                                                      //         .toString());
-                                                      //then connect the device to the network
-                                                      // _connectDevice(
-                                                      //     _devices[index]
-                                                      //         .deviceId);
+                                                      });
+
+                                                      //send the data to the server via rest api that the device is connected
+                                                      deviceConnected(
+                                                          _devices[index]
+                                                              .deviceId, userId);
+                                  
                                                     },
                                                   ),
                                                 ),
@@ -533,7 +613,6 @@ class _DevicesState extends State<Devices> {
                                                       //     _devices[index]
                                                       //         .deviceId);
 
-                                                      
                                                       // _connectDevice(
                                                       //     _devices[index]
                                                       //         .deviceId);
@@ -576,6 +655,173 @@ class _DevicesState extends State<Devices> {
 
     //
   }
+
+  void updateState() {
+    setState(() {
+      for (int i = 0; i < _devices.length; i++) {
+        if (_devices[i].enable_1 == true) {
+          _devices[i].enable_2 = false;
+          _devices[i].enable_3 = false;
+          _devices[i].enable_4 = false;
+        } else if (_devices[i].enable_2 == true) {
+          _devices[i].enable_1 = false;
+          _devices[i].enable_3 = false;
+          _devices[i].enable_4 = false;
+        } else if (_devices[i].enable_3 == true) {
+          _devices[i].enable_1 = false;
+          _devices[i].enable_2 = false;
+          _devices[i].enable_4 = false;
+        } else if (_devices[i].enable_4 == true) {
+          _devices[i].enable_1 = false;
+          _devices[i].enable_2 = false;
+          _devices[i].enable_3 = false;
+        } else {
+          // set the  device of the enable_1, enable_2, enable_3, enable_4 to initial state
+          _devices[i].enable_1 = false;
+          _devices[i].enable_2 = false;
+          _devices[i].enable_3 = false;
+          _devices[i].enable_4 = false;
+        }
+      }
+    });
+  }
+
+  void updateStat(value, index) {
+    print(value);
+    print(index);
+    for (int i = 0; i < _devices.length; i++) {
+      if (i == index) {
+        if (value == 1) {
+          _devices[i].enable_1 = true;
+          _devices[i].enable_2 = false;
+          _devices[i].enable_3 = false;
+          _devices[i].enable_4 = false;
+        } else if (value == 2) {
+          _devices[i].enable_1 = false;
+          _devices[i].enable_2 = true;
+          _devices[i].enable_3 = false;
+          _devices[i].enable_4 = false;
+        } else if (value == 3) {
+          _devices[i].enable_1 = false;
+          _devices[i].enable_2 = false;
+          _devices[i].enable_3 = true;
+          _devices[i].enable_4 = false;
+        } else if (value == 4) {
+          _devices[i].enable_1 = false;
+          _devices[i].enable_2 = false;
+          _devices[i].enable_3 = false;
+          _devices[i].enable_4 = true;
+        } else {
+          // set the  device of the enable_1, enable_2, enable_3, enable_4 to initial state
+          _devices[i].enable_1 = false;
+          _devices[i].enable_2 = false;
+          _devices[i].enable_3 = false;
+          _devices[i].enable_4 = false;
+        }
+      }
+      // if (i == index) {
+      //   if ( _devices[i].enable_1 = value) {        
+      //     _devices[i].enable_2 = false;
+      //     _devices[i].enable_3 = false;
+      //     _devices[i].enable_4 = false;
+      //   } else if (_devices[i].enable_2 = value) {
+      //     _devices[i].enable_1 = false;
+      //     _devices[i].enable_3 = false;
+      //     _devices[i].enable_4 = false;
+      //   } else if (_devices[i].enable_3 = value) {
+      //     _devices[i].enable_1 = false;
+      //     _devices[i].enable_2 = false;
+      //     _devices[i].enable_4 = false;
+      //   } else if (_devices[i].enable_4 = value) {
+      //     _devices[i].enable_1 = value;
+      //     _devices[i].enable_2 = false;
+      //     _devices[i].enable_3 = false;
+      //   } 
+
+      // }
+
+      // else {
+
+      //   _devices[index].enable_1 = false;
+      //   _devices[index].enable_2 = false;
+      //   _devices[index].enable_3 = false;
+      //   _devices[index].enable_4 = false;
+      // }
+    }
+  }
+}
+Future<int> deviceConnected(int deviceId, int userId)  async{
+  final response = await Dio().post(
+        'https://6087-105-162-29-38.eu.ngrok.io/devices/connected',
+        data: {
+          'device': deviceId,
+          'user': userId,
+        },
+
+      );
+      print(response.data);
+
+    switch (response.statusCode) {
+      case 200:
+        
+        //show Scaffold that the device is connected
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text('Device Connected'),
+        ));
+        return response.data;
+        break;
+      case 400:
+        return response.data;
+        break;
+      case 500:
+        return response.data;
+        break;
+      default:
+        return response.data;
+    }
+  
+    switch (response.data) {
+      case 1:
+        return 1;
+        break;
+      case 2:
+        return 2;
+        break;
+      case 3:
+        return 3;
+        break;
+      case 4:
+        return 4;
+        break;
+      default:
+        return 0;
+    }
+
+      
+      
+   
+}
+
+   
+   
+  //connect the device to the network
+  // await client.connect(
+  //     host: 'mqtt.eclipse.org',
+  //     port: 1883,
+  //     clientId: deviceId,
+  //     username: 'admin',
+  //     password: 'admin',
+  //     onConnectionStatusChanged: (status) {
+  //       print(status);
+  //     },
+  //     onConnected: () {
+  //       print('connected');
+  //     },
+  //     onDisconnected: (disco) {
+  //       print('disconnected');
+  //     });
+
+   
 }
 
 // function to change enable_1, enable_2, enable_3 and enable_4 to false if enable_1 is true,
@@ -603,7 +849,7 @@ void _connectDevice(String deviceId) async {
   // print ("userId: " + userId);
   // print ("deviceId: " + deviceId);
   await Dio().post(
-    'https://b054-41-80-108-154.eu.ngrok.io/connected/devices',
+    'https://6087-105-162-29-38.eu.ngrok.io/connected/devices',
     //ApiUrls().getConnectedDevicesUrl(),
     data: {
       'user_detail_id': userId,

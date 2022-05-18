@@ -11,7 +11,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late ThemeData theme;
+  ThemeData? theme;
 
   //bool isLoading = false;
   bool isLoggedIn = false;
@@ -23,6 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String name = '';
   String email = '';
+  String image = '';
 
   @override
   void initState() {
@@ -78,21 +79,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
       //get name and email
       name = prefs.getString('name') ?? '';
       email = prefs.getString('email') ?? '';
+      image = prefs.getString('profile_pic') ?? '';
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-        data: theme.copyWith(
-            colorScheme: theme.colorScheme
-                .copyWith(secondary: kTextColor.withAlpha(40))),
-        child: SafeArea(
-            child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Profile'),
-            centerTitle: true,
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profile', style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w700,
+          fontSize: 30.0,
+        
+        )),
+        elevation: 2.0,
+        backgroundColor: theme?.colorScheme?.background ?? Colors.white,
+
+
+      ),
 
           //body
           body: ListView(
@@ -105,12 +110,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       borderRadius: BorderRadius.circular(50),
                       child: Image(
                         //get  image from shared preferences if available otherwise use default image
-                        image: AssetImage(name == ''
-                            ? 'assets/images/user.png'
-                            : 'assets/images/user.png'),
+                        image: AssetImage(image == ' '? 'assets/images/profile/user.png'
+                            : 'assets/images/profile/user.png'),
 
-                        height: 100,
-                        width: 100,
+                        height: 40,
+                        width: 40,
                       ),
                     ),
                     const SizedBox(
@@ -284,6 +288,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ]))
             ],
           ),
-        )));
+        );
+        
   }
 }
