@@ -58,12 +58,6 @@ class _DevicesState extends State<Devices> {
         devices.add(DeviceData.fromJson(device));
       }
       return devices;
-      // If the call to the server was successful, parse the JSON
-      // return (json.decode(response.toString()) as List)
-      //     .map((data) => DeviceData.fromJson(data))
-      //     .toList();
-
-      // print(devices);
 
     } else {
       throw Exception('Failed to load devices');
@@ -86,8 +80,7 @@ class _DevicesState extends State<Devices> {
       });
     });
 
-    //get devicees from the server
-    // devices = fetchDevices() as List<DeviceData>;
+
 
     //load the access token from shared preferences
     // accessToken = "";
@@ -138,21 +131,7 @@ class _DevicesState extends State<Devices> {
       device.deviceStatus = status;
     });
 
-    //update the device status on the server
-    //  await http.put(
-    //   'https://5514-41-80-106-82.eu.ngrok.io/devices/update/$deviceId',
-    //   body: json.encode({
-    //     'device_status': status,
-    //     'enable_1': enable_1,
-    //     'enable_2': enable_2,
-    //     'enable_3': enable_3,
-    //     'enable_4': enable_4,
-    //   }),
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': 'Bearer $accessToken',
-    //   },
-    // );
+
   }
 
   @override
@@ -342,10 +321,7 @@ class _DevicesState extends State<Devices> {
                                                         child: TextField(
                                                           controller:
                                                               frequencyControllerLane3,
-                                                          // decoration: const InputDecoration(
-                                                          //   hintText: '_devices[index].lane3',
-                                                          //   border: InputBorder.none,
-                                                          // ),
+                                                    
                                                         ))),
                                                 Expanded(
                                                     //
@@ -402,10 +378,6 @@ class _DevicesState extends State<Devices> {
                                                         child: TextField(
                                                           controller:
                                                               frequencyControllerLane3,
-
-                                                          // decoration: InputDecoration(
-                                                          //   border: OutlineInputBorder(),
-                                                          //   labelText: 'Lane 3',
                                                           // ),
                                                         ))),
 
@@ -534,17 +506,6 @@ class _DevicesState extends State<Devices> {
                                                 const SizedBox(
                                                   width: 10,
                                                 ),
-                                                //CupertinoSwitch to enable/disable the device
-                                                // Expanded(
-                                                //   child: CupertinoSwitch(
-                                                //     value: _devices[index].deviceStatus,
-                                                //     onChanged: (bool value) {
-                                                //       setState(() {
-                                                //         _devices[index].deviceStatus = value;
-                                                //       });
-                                                //     },
-                                                //   ),
-                                                // ),
                                               ],
                                             ),
 
@@ -601,14 +562,7 @@ class _DevicesState extends State<Devices> {
                                                     ),
                                                     onPressed: () {
                                                       client.disconnect();
-                                                      //disconnect the device to mqtt broker
-                                                      // connectDevice(
-                                                      //     _devices[index]
-                                                      //         .deviceId);
-
-                                                      // _connectDevice(
-                                                      //     _devices[index]
-                                                      //         .deviceId);
+                                                      //send the data to the server via rest api that the device is disconnected  
                                                     },
                                                   ),
                                                 ),
@@ -636,112 +590,9 @@ class _DevicesState extends State<Devices> {
       ),
     );
 
-    //METHODS
-    //method to connect the device to the network
 
-    //only show the list of devices if the user is logged in
-    // if (isLoggedIn)
-    //   return Scaffold(
-    //     appBar: AppBar(
-    //       title: const Text('Devices'),
-    //     ),
-
-    //
   }
 
-  void updateState() {
-    setState(() {
-      for (int i = 0; i < _devices.length; i++) {
-        if (_devices[i].enable_1 == true) {
-          _devices[i].enable_2 = false;
-          _devices[i].enable_3 = false;
-          _devices[i].enable_4 = false;
-        } else if (_devices[i].enable_2 == true) {
-          _devices[i].enable_1 = false;
-          _devices[i].enable_3 = false;
-          _devices[i].enable_4 = false;
-        } else if (_devices[i].enable_3 == true) {
-          _devices[i].enable_1 = false;
-          _devices[i].enable_2 = false;
-          _devices[i].enable_4 = false;
-        } else if (_devices[i].enable_4 == true) {
-          _devices[i].enable_1 = false;
-          _devices[i].enable_2 = false;
-          _devices[i].enable_3 = false;
-        } else {
-          // set the  device of the enable_1, enable_2, enable_3, enable_4 to initial state
-          _devices[i].enable_1 = false;
-          _devices[i].enable_2 = false;
-          _devices[i].enable_3 = false;
-          _devices[i].enable_4 = false;
-        }
-      }
-    });
-  }
-
-  void updateStat(value, index) {
-    print(value);
-    print(index);
-    for (int i = 0; i < _devices.length; i++) {
-      if (i == index) {
-        if (value == 1) {
-          _devices[i].enable_1 = true;
-          _devices[i].enable_2 = false;
-          _devices[i].enable_3 = false;
-          _devices[i].enable_4 = false;
-        } else if (value == 2) {
-          _devices[i].enable_1 = false;
-          _devices[i].enable_2 = true;
-          _devices[i].enable_3 = false;
-          _devices[i].enable_4 = false;
-        } else if (value == 3) {
-          _devices[i].enable_1 = false;
-          _devices[i].enable_2 = false;
-          _devices[i].enable_3 = true;
-          _devices[i].enable_4 = false;
-        } else if (value == 4) {
-          _devices[i].enable_1 = false;
-          _devices[i].enable_2 = false;
-          _devices[i].enable_3 = false;
-          _devices[i].enable_4 = true;
-        } else {
-          // set the  device of the enable_1, enable_2, enable_3, enable_4 to initial state
-          _devices[i].enable_1 = false;
-          _devices[i].enable_2 = false;
-          _devices[i].enable_3 = false;
-          _devices[i].enable_4 = false;
-        }
-      }
-      // if (i == index) {
-      //   if ( _devices[i].enable_1 = value) {
-      //     _devices[i].enable_2 = false;
-      //     _devices[i].enable_3 = false;
-      //     _devices[i].enable_4 = false;
-      //   } else if (_devices[i].enable_2 = value) {
-      //     _devices[i].enable_1 = false;
-      //     _devices[i].enable_3 = false;
-      //     _devices[i].enable_4 = false;
-      //   } else if (_devices[i].enable_3 = value) {
-      //     _devices[i].enable_1 = false;
-      //     _devices[i].enable_2 = false;
-      //     _devices[i].enable_4 = false;
-      //   } else if (_devices[i].enable_4 = value) {
-      //     _devices[i].enable_1 = value;
-      //     _devices[i].enable_2 = false;
-      //     _devices[i].enable_3 = false;
-      //   }
-
-      // }
-
-      // else {
-
-      //   _devices[index].enable_1 = false;
-      //   _devices[index].enable_2 = false;
-      //   _devices[index].enable_3 = false;
-      //   _devices[index].enable_4 = false;
-      // }
-    }
-  }
 }
 
 Future<String> deviceConnected(String deviceId, String userId) async {
@@ -808,67 +659,4 @@ Future<String> deviceConnected(String deviceId, String userId) async {
   }
 }
 
-// function to change enable_1, enable_2, enable_3 and enable_4 to false if enable_1 is true,
-// if enable_2 is true, then set enable_1, enable_3 and enable_4 to false, if enable_3 is true, then set enable_2, enable_1 and enable_3 to false,
-// if enable_4 is true, then set enable_2, enable_1, enable_3 and enable_4 to false
-// void _setEnableFalse() {
-//   for (int i = 0; i < _devices.length; i++) {
-//     if (_devices[i].enable_1 == true) {
-//       _devices[i].enable_2 = false;
-//       _devices[i].enable_3 = false;
-//       _devices[i].enable_4 = false;
-//     }
-// connect device to MQTT Client  then connect device to the network
-void connectDevice(String deviceId) {}
 
-// connect the device to the Rest Api network using the device id and the current user's id  in shared preferences
-void _connectDevice(String deviceId) async {
-  // print ("connecting device" + deviceId);
-  //get the current user's id from shared preferences
-  // SharedPreferences prefs = await SharedPreferences.getInstance();
-  // String? userId = prefs.getString('userId');
-  String? userId = await SharedPreferences.getInstance().then((value) {
-    return value.getString("userId");
-  });
-  // print ("userId: " + userId);
-  // print ("deviceId: " + deviceId);
-  await Dio().post(
-    'https://6087-105-162-29-38.eu.ngrok.io/connected/devices',
-    //ApiUrls().getConnectedDevicesUrl(),
-    data: {
-      'user_detail_id': userId,
-      'device_name': deviceId,
-      'active': true,
-      'time_connected': DateTime.now().toString(),
-    },
-  ).then((response) async {
-    print("response: " + response.toString());
-    switch (response.statusCode) {
-      case 200:
-        print("device connected");
-        // message that the device is connected
-
-        break;
-      case 400:
-        print("device not connected");
-        // message that the device is not connected
-
-        break;
-      case 500:
-        print('server error');
-        // message that the server is not connected
-
-        break;
-      case 404:
-        print('device not found');
-        // message that the device is not found
-
-        break;
-      default:
-        print('unknown error');
-        // message that the device is not connected
-
-        break;
-    }
-  });
-}

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:iot_app/dashboard.dart';
 import 'package:iot_app/homepage.dart';
 import 'package:iot_app/model/user.dart';
+import 'package:iot_app/utilities/api_urls.dart';
 import 'package:iot_app/utilities/user_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -173,18 +174,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 20),
                         TextButton(
                           onPressed: () async {
-                            // _showDialog("Data is loading...");
-                            // showDialog(
-                            //   context: context,
-                            //   builder: (BuildContext context) {
-                            //     return const AlertDialog(
-                            //       title: Text("Data procesing"),
-                            //       content: Text("Processing your data"),
-                            //     );
-                            //   }
-                            // );
-                            //_inputValidations();
-                            //Navigator.pop(context);
                             _loginUser(controllerEmail.text.toString(),
                                 controllerPass.text.toString());
                           },
@@ -222,60 +211,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _inputValidations() {
-    if (controllerEmail.text.isEmpty) {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const AlertDialog(
-              title: Text("Error"),
-              content: Text("Please enter your email"),
-            );
-          });
-    } else if (controllerPass.text.isEmpty) {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const AlertDialog(
-              title: Text("Error"),
-              content: Text("Please enter your password"),
-            );
-          });
-    } else {
-      _onLoading();
-    }
-  }
 
-  void _onLoading() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        child: Container(
-          height: 100,
-          color: Colors.white,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const <Widget>[
-              CircularProgressIndicator(),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                child: Text(
-                  "Loading",
-                  style: TextStyle(fontSize: 18),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-    // call the login function
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pop(context);
-      _loginProcess();
-    });
-  }
+
 
   void _loginUser(String email, String password) async {
     //call the rest api
@@ -289,8 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       //use dio to make the request
       await Dio()
-          .post(
-        "https://50f0-138-199-60-167.ap.ngrok.io/user/login",
+          .post(ApiUrls().getLoginUrl(),
         data: data,
       )
           .then((response) async {
@@ -312,20 +248,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ); 
 
-          // var client = User.fromJson(json.decode(response.data));
-          // print(client.email);
-          // if (client.email.isNotEmpty && client.accessToken.isNotEmpty) {
-          //   UserData userData = UserData();
-
-          //   if (await userData.saveClient(client)) {
-          //     Navigator.pushReplacement(
-          //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) => const DashboardPage(),
-          //       ),
-          //     );
-          //   }
-          // }
         } else {
           print('here');
           showDialog(
@@ -345,24 +267,6 @@ class _LoginScreenState extends State<LoginScreen> {
     //_loginProcess();
   }
 
-  
-  }
 
-  void _showDialog(
-    String message,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Error"),
-        content: Text(
-          message,
-          style: const TextStyle(
-              fontSize: 16.0,
-              color: Colors.black,
-              fontFamily: "ShadowsIntoLightTwo"),
-        ),
-      ),
-    );
-  }
+
 }
