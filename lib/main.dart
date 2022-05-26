@@ -20,14 +20,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),    
-      home: SplashScreenWidget(),
+      home: const SplashScreenWidget(),
     );
   }
 }
 
 
 class SplashScreenWidget extends StatefulWidget {
-  SplashScreenWidget({Key? key}) : super(key: key);
+  const SplashScreenWidget({Key? key}) : super(key: key);
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -51,13 +51,13 @@ class _SplashScreenState extends State<SplashScreenWidget> {
 
   void loadHome() {
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => DashboardPage()),
+        MaterialPageRoute(builder: (context) => const DashboardPage()),
         (Route<dynamic> route) => false);
   }
 
   void loadLogin() {
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LoginScreen()),
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
         (Route<dynamic> route) => false);
   }
 

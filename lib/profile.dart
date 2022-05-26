@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iot_app/constants/constants.dart';
+import 'package:iot_app/edit_profile.dart';
+import 'package:iot_app/login.dart';
+import 'package:iot_app/widgets/custom_app_bar.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -86,6 +89,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //appBar: buildAppBar(context),
+
       appBar: AppBar(
         title: const Text('Profile', style: TextStyle(
           color: Colors.black,
@@ -113,8 +118,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         image: AssetImage(image == ' '? 'assets/images/profile/user.png'
                             : 'assets/images/profile/user.png'),
 
-                        height: 40,
-                        width: 40,
+                        height: 80,
+                        width: 80,
                       ),
                     ),
                     const SizedBox(
@@ -142,7 +147,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                           OutlinedButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, '/editProfile');
+                             
                             },
                             child: const Text(
                               'Edit Profile',
@@ -237,7 +242,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Center(
                       child: OutlinedButton(
                         onPressed: () {
-                          //logout
+                          //logout and clear shared preferences
+                          _logout();
+
                           //Navigator.pushNamed(context, '/login');
                         },
                         child: const Text(
@@ -290,5 +297,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         );
         
+  }
+
+  void _logout() {
+    //clear shared preferences
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.clear();
+    });
+
+    //Navigate to login screen
+    Navigator.push(context,  MaterialPageRoute(builder: (context) => const LoginScreen(
+
+    )));
+
+    //Navigator.pushNamed(context, '/login');
   }
 }

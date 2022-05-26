@@ -220,15 +220,12 @@ class _LoginScreenState extends State<LoginScreen> {
       "email": email,
       "password": password,
     };
-
-    //var body = json.encode(data);
-    //print(body);
     try {
       //use dio to make the request
       await Dio()
-          .post(ApiUrls().getLoginUrl(),
-        data: data,
-      )
+          .post(
+            'https://1354-41-90-64-46.eu.ngrok.io/user/login',
+           data: data,)
           .then((response) async {
         //check the response
         print(response.data);
@@ -240,7 +237,8 @@ class _LoginScreenState extends State<LoginScreen> {
           prefs.setString("token", response.data["access_token"]);
           prefs.setString("email", response.data["email"]);
           prefs.setString("name", response.data["full_name"]);
-          // prefs.setString("userId", response.data["id"]);
+          //get the user id as an int
+          prefs.setInt("userId", response.data["id"]);
           Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(

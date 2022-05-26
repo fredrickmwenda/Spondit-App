@@ -1,11 +1,10 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iot_app/model/device_data.dart';
-import 'package:iot_app/utilities/api_urls.dart';
+
 import 'package:iot_app/utilities/mqtt_client.dart';
+import 'package:iot_app/widgets/device_textf_field.dart';
 //  import package mqtt_client;
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -50,7 +49,7 @@ class _DevicesState extends State<Devices> {
   //get devices from the server
   Future<List<DeviceData>> fetchDevices() async {
     final response = await Dio().get(
-      'https://50f0-138-199-60-167.ap.ngrok.io/devices/all',
+      'https://1354-41-90-64-46.eu.ngrok.io/devices/all',
     );
     if (response.statusCode == 200) {
       List<DeviceData> devices = [];
@@ -259,13 +258,25 @@ class _DevicesState extends State<Devices> {
                                                             const EdgeInsets
                                                                 .all(5.0),
                                                         //get data of the lane 3 from the models  and display  it in TextField
-                                                        child: TextField(
-                                                          controller:
-                                                              frequencyControllerLane3,
-                                                          keyboardType:
-                                                              TextInputType
-                                                                  .number,
-                                                        ))),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane1, 
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                  .lane1 =
+                                                                  value;
+                                                            });
+                                                          },
+                                                        )
+                                                        // child: TextField(
+                                                        //   controller:
+                                                        //       frequencyControllerLane3,
+                                                        //   keyboardType:
+                                                        //       TextInputType
+                                                        //           .number,
+                                                        // )
+                                                        )),
                                                 Expanded(
                                                     //
                                                     child: CupertinoSwitch(
@@ -318,11 +329,18 @@ class _DevicesState extends State<Devices> {
                                                             const EdgeInsets
                                                                 .all(5.0),
                                                         //get data of the lane 3 from the models  and display  it in TextField
-                                                        child: TextField(
-                                                          controller:
-                                                              frequencyControllerLane3,
-                                                    
-                                                        ))),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane2, 
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                  .lane2 =
+                                                                  value;
+                                                            });
+                                                          },
+                                                        )
+                                                        )),
                                                 Expanded(
                                                     //
                                                     child: CupertinoSwitch(
@@ -375,11 +393,19 @@ class _DevicesState extends State<Devices> {
                                                                 .all(5.0),
                                                         //get data of the lane 3 from the models  and display  it in TextField
 
-                                                        child: TextField(
-                                                          controller:
-                                                              frequencyControllerLane3,
-                                                          // ),
-                                                        ))),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane3, 
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                  .lane3 =
+                                                                  value;
+                                                            });
+                                                          },
+                                                        )
+                                                        )),
+                                                    
 
                                                 Expanded(
                                                     //
@@ -437,16 +463,23 @@ class _DevicesState extends State<Devices> {
                                                   ),
                                                 ),
                                                 Flexible(
-                                                    child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(5.0),
-                                                        //get data of the lane 3 from the models  and display  it in TextField
-
-                                                        child: TextField(
-                                                          controller:
-                                                              frequencyControllerLane4,
-                                                        ))),
+                                                  child: Padding(
+                                                    padding:
+                                                      const EdgeInsets.all(5.0),
+                                                      //get data of the lane 3 from the models  and display  it in TextField
+                                                    child: DeviceTextField(
+                                                      text: _devices[index]
+                                                          .lane4, 
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          _devices[index]
+                                                              .lane4 =
+                                                              value;
+                                                        });
+                                                      },
+                                                    )
+                                                  )
+                                                ),
                                                 Expanded(
                                                     //
                                                     child: CupertinoSwitch(
