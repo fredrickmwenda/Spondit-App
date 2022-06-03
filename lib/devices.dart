@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iot_app/model/device_data.dart';
+import 'package:iot_app/utilities/api_urls.dart';
 
 import 'package:iot_app/utilities/mqtt_client.dart';
 import 'package:iot_app/widgets/device_textf_field.dart';
@@ -28,15 +29,17 @@ class _DevicesState extends State<Devices> {
 
   //get access token from shared preferences
   String accessToken = "";
-  String userId = "";
+  //get integer user id from shared preferences
+  int userId = 0;
 
   // Future List of  devices with  null check
 
   final List<DeviceData> _devices = [];
-  var topic = "topic/test";
+  var topic = "topic/devices";
   var topic1 = "topic/test1";
   var topic2 = "topic/test2";
   var topic3 = "topic/test3";
+  var topic4 = "topic/test4";
   MqttClient client =
       MqttServerClient.withPort('broker.emqx.io', 'flutter_client', 1883);
 
@@ -48,8 +51,12 @@ class _DevicesState extends State<Devices> {
 
   //get devices from the server
   Future<List<DeviceData>> fetchDevices() async {
-    final response = await Dio().get(
-      'https://1354-41-90-64-46.eu.ngrok.io/devices/all',
+    Dio dio = Dio();
+
+    dio.options.headers['Authorization'] = 'Bearer $accessToken';
+    print(dio.options.headers);
+    final response = await dio.get(
+      ApiUrls().getDeviceListUrl(),
     );
     if (response.statusCode == 200) {
       List<DeviceData> devices = [];
@@ -57,7 +64,6 @@ class _DevicesState extends State<Devices> {
         devices.add(DeviceData.fromJson(device));
       }
       return devices;
-
     } else {
       throw Exception('Failed to load devices');
     }
@@ -66,41 +72,41 @@ class _DevicesState extends State<Devices> {
   @override
   void initState() {
     super.initState();
-    fetchDevices().then((value) {
-      setState(() {
-        _devices.addAll(value);
-        
-        //textEdingcontroller according to specific device using indec
+    //first get access token from shared preferences
+    _loadAccessToken();
+    // wait for access token to be loaded
+    Future.delayed(const Duration(seconds: 10), () {
+      // wait for user id to be loaded
 
-        frequencyControllerLane1.text = _devices[0].lane1;
-        frequencyControllerLane2.text = _devices[0].lane2;
-        frequencyControllerLane3.text = _devices[0].lane3;
-        frequencyControllerLane4.text = _devices[0].lane4;
+      //then get devices from the server
+      fetchDevices().then((value) {
+        setState(() {
+          _devices.addAll(value);
+        });
       });
     });
-
-
+    // fetchDevices().then((value) {
+    //   setState(() {
+    //     _devices.addAll(value);
+    //   });
+    // });
 
     //load the access token from shared preferences
     // accessToken = "";
-    _loadAccessToken();
   }
 
   @override
   void dispose() {
     super.dispose();
-    frequencyControllerLane1.dispose();
-    frequencyControllerLane2.dispose();
-    frequencyControllerLane3.dispose();
-    frequencyControllerLane4.dispose();
   }
 
   //load the access token from shared preferences
   _loadAccessToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      accessToken = prefs.getString('access_token') ?? "";
-      userId = prefs.getString('user_id') ?? "";
+      accessToken = (prefs.getString('token') ?? '');
+      //get int value of user id
+      userId = prefs.getInt('userId')!;
     });
   }
 
@@ -129,8 +135,6 @@ class _DevicesState extends State<Devices> {
     setState(() {
       device.deviceStatus = status;
     });
-
-
   }
 
   @override
@@ -260,12 +264,23 @@ class _DevicesState extends State<Devices> {
                                                         //get data of the lane 3 from the models  and display  it in TextField
                                                         child: DeviceTextField(
                                                           text: _devices[index]
-                                                              .lane1, 
+                                                              .lane1,
                                                           onChanged: (value) {
                                                             setState(() {
                                                               _devices[index]
-                                                                  .lane1 =
+                                                                      .lane1 =
                                                                   value;
+
+                                                              if (_devices[
+                                                                          index]
+                                                                      .enable_2 ==
+                                                                  true) {
+                                                                _publish(
+                                                                  _devices[
+                                                                          index]
+                                                                      .lane2,
+                                                                );
+                                                              }
                                                             });
                                                           },
                                                         )
@@ -298,12 +313,49 @@ class _DevicesState extends State<Devices> {
                                                           _devices[i].enable_4 =
                                                               false;
                                                         }
+                                                        //call the function to update the device status
+
                                                       }
                                                     });
                                                     // state
-                                                    // updateState();
-                                                    client.subscribe(topic,
-                                                        MqttQos.atLeastOnce);
+                                                    //function to send  enable status to the server
+                                                    // enableState(
+                                                    //      index,
+                                                    //       _devices[index]
+                                                    //           .enable_1,                                                 
+                                                    //     _devices[index]
+                                                    //         .enable_2,
+                                                    //     _devices[index].enable_3,
+                                                    //     _devices[index]
+                                                    //         .enable_4,
+
+                                                    // );
+                                                    if (_devices[index]
+                                                            .enable_1 ==
+                                                        true) {
+
+                                                      client.subscribe(topic1, MqttQos.atLeastOnce);
+
+                                                      Fluttertoast.showToast(
+                                                          msg: "Subscribed to " +
+                                                              topic1,
+                                                          toastLength:
+                                                              Toast.LENGTH_SHORT,
+                                                          gravity:
+                                                              ToastGravity.BOTTOM,
+                                                          backgroundColor:
+                                                              Colors.blue,
+                                                          textColor:
+                                                              Colors.white,
+                                                          fontSize: 16.0
+                                                        );
+
+                                                    }
+
+
+                                                    
+                                                    // client.subscribe(topic,
+                                                    //     MqttQos.atLeastOnce);
                                                   },
                                                 )),
                                                 //CupertinoSwitch to enable/disable the lane 1
@@ -331,16 +383,29 @@ class _DevicesState extends State<Devices> {
                                                         //get data of the lane 3 from the models  and display  it in TextField
                                                         child: DeviceTextField(
                                                           text: _devices[index]
-                                                              .lane2, 
+                                                              .lane2,
                                                           onChanged: (value) {
                                                             setState(() {
                                                               _devices[index]
-                                                                  .lane2 =
+                                                                      .lane2 =
                                                                   value;
+                                                      
                                                             });
+
+                                                            _publish(
+                                                              _devices[index]
+                                                                  .lane2,
+                                                            );
+
+                                                            //get new data of lane 2 and send it to the server
+                                                            // _lane2(
+                                                            //     _devices[index]
+                                                            //         .lane2);
+                                                        
+
+
                                                           },
-                                                        )
-                                                        )),
+                                                        ))),
                                                 Expanded(
                                                     //
                                                     child: CupertinoSwitch(
@@ -353,6 +418,10 @@ class _DevicesState extends State<Devices> {
                                                           i < _devices.length;
                                                           i++) {
                                                         if (i == index) {
+                                                          //get  device id
+                                                          _devices[i].id =
+                                                              _devices[i].id;
+
                                                           _devices[i].enable_2 =
                                                               value;
                                                           _devices[i].enable_1 =
@@ -361,12 +430,35 @@ class _DevicesState extends State<Devices> {
                                                               false;
                                                           _devices[i].enable_4 =
                                                               false;
-                                                        }
+                                                            
+                                                            //store the device status
+
+                                                        }                                                       
+                         
                                                       }
+
                                                     });
 
-                                                    client.subscribe(topic1,
-                                                        MqttQos.atLeastOnce);
+                                                    //Subscribe  to topic with deviceName
+                                                    //if _devices[index].enable_2 is true
+                                                    //then call the function to publish the status of the lane 2
+                                                    if(_devices[index].enable_2 == true){
+                                                      client.subscribe(topic2,
+                                                          MqttQos.atLeastOnce);
+                                                      //notify that they are subscribed to the topic
+                                                       Fluttertoast.showToast(
+                                                          msg: "Subscribed to " +
+                                                              topic2,
+                                                          toastLength: Toast.LENGTH_SHORT,
+                                                          gravity: ToastGravity.BOTTOM,                                                          
+                                                          backgroundColor: Colors.green,
+                                                          textColor: Colors.white,
+                                                          fontSize: 16.0);
+
+                                                    }
+
+                                                    // client.subscribe(topic1,
+                                                    //     MqttQos.atLeastOnce);
                                                   },
                                                 )),
                                                 //CupertinoSwitch to enable/disable the lane 1
@@ -395,17 +487,25 @@ class _DevicesState extends State<Devices> {
 
                                                         child: DeviceTextField(
                                                           text: _devices[index]
-                                                              .lane3, 
+                                                              .lane3,
                                                           onChanged: (value) {
                                                             setState(() {
                                                               _devices[index]
-                                                                  .lane3 =
+                                                                      .lane3 =
                                                                   value;
+                                                              // if value is true then publish the lane 3 frequency to the topic
+                                                              // else publish the lane 3 frequency to the topic
+                                                              if (_devices[
+                                                                          index]
+                                                                      .enable_3 ==
+                                                                  true) {
+                                                                _publish(_devices[
+                                                                        index]
+                                                                    .lane3);
+                                                              }
                                                             });
                                                           },
-                                                        )
-                                                        )),
-                                                    
+                                                        ))),
 
                                                 Expanded(
                                                     //
@@ -424,6 +524,8 @@ class _DevicesState extends State<Devices> {
                                                                         .length;
                                                                 i++) {
                                                               if (i == index) {
+                                                                //get device id
+
                                                                 _devices[i]
                                                                         .enable_3 =
                                                                     value;
@@ -440,10 +542,24 @@ class _DevicesState extends State<Devices> {
                                                             }
                                                           });
                                                           // updateState();
-                                                          client.subscribe(
-                                                              topic2,
-                                                              MqttQos
-                                                                  .atLeastOnce);
+                                                          if(_devices[index].enable_3 == true){
+                                                            client.subscribe(topic3,
+                                                                MqttQos.atLeastOnce);
+                                                            //notify that they are subscribed to the topic
+                                                            Fluttertoast.showToast(
+                                                                msg: "Subscribed to " +
+                                                                    topic3,
+                                                                toastLength:
+                                                                    Toast.LENGTH_SHORT,
+                                                                gravity:
+                                                                    ToastGravity.BOTTOM,
+                                                                backgroundColor:
+                                                                    Colors.green,
+                                                                textColor:
+                                                                    Colors.white,
+                                                                fontSize: 16.0);
+                                                          }
+  
                                                         })),
                                                 //CupertinoSwitch to enable/disable the lane 1
                                               ],
@@ -463,23 +579,31 @@ class _DevicesState extends State<Devices> {
                                                   ),
                                                 ),
                                                 Flexible(
-                                                  child: Padding(
-                                                    padding:
-                                                      const EdgeInsets.all(5.0),
-                                                      //get data of the lane 3 from the models  and display  it in TextField
-                                                    child: DeviceTextField(
-                                                      text: _devices[index]
-                                                          .lane4, 
-                                                      onChanged: (value) {
-                                                        setState(() {
-                                                          _devices[index]
-                                                              .lane4 =
-                                                              value;
-                                                        });
-                                                      },
-                                                    )
-                                                  )
-                                                ),
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5.0),
+                                                        //get data of the lane 3 from the models  and display  it in TextField
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane4,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane4 =
+                                                                  value;
+                                                              // if value is true then publish the topic with the value of the lane 4
+                                                              if (_devices[
+                                                                          index]
+                                                                      .enable_4 ==
+                                                                  true) {
+                                                                _publish(_devices[
+                                                                        index]
+                                                                    .lane4);
+                                                              }
+                                                            });
+                                                          },
+                                                        ))),
                                                 Expanded(
                                                     //
                                                     child: CupertinoSwitch(
@@ -504,9 +628,26 @@ class _DevicesState extends State<Devices> {
                                                         }
                                                       }
                                                     });
+                                                    if(_devices[index].enable_4 == true){
+                                                      client.subscribe(topic4,
+                                                          MqttQos.atLeastOnce);
+                                                      //notify that they are subscribed to the topic
+                                                      Fluttertoast.showToast(
+                                                          msg: "Subscribed to " +
+                                                              topic4,
+                                                          toastLength:
+                                                              Toast.LENGTH_SHORT,
+                                                          gravity:
+                                                              ToastGravity.BOTTOM,
+                                                          backgroundColor:
+                                                              Colors.green,
+                                                          textColor:
+                                                              Colors.white,
+                                                          fontSize: 16.0);
+                                                    }
 
-                                                    client.subscribe(topic3,
-                                                        MqttQos.atLeastOnce);
+                                                    // client.subscribe(topic3,
+                                                    //     MqttQos.atLeastOnce);
                                                   },
                                                 )),
                                                 //CupertinoSwitch to enable/disable the lane 1
@@ -572,8 +713,7 @@ class _DevicesState extends State<Devices> {
 
                                                       //send the data to the server via rest api that the device is connected
                                                       deviceConnected(
-                                                          _devices[index]
-                                                              .deviceId,
+                                                          _devices[index].id,
                                                           userId);
                                                     },
                                                   ),
@@ -595,7 +735,10 @@ class _DevicesState extends State<Devices> {
                                                     ),
                                                     onPressed: () {
                                                       client.disconnect();
-                                                      //send the data to the server via rest api that the device is disconnected  
+                                                      //send the data to the server via rest api that the device is disconnected
+                                                      deviceDisconnected(
+                                                          _devices[index].id,
+                                                          userId);
                                                     },
                                                   ),
                                                 ),
@@ -622,74 +765,230 @@ class _DevicesState extends State<Devices> {
         ),
       ),
     );
-
-
   }
 
-}
+  // function to connect the device to the network
+  void deviceConnected(int deviceId, int userId) async {
+    Map<String, dynamic> data = {
+      'device_id': deviceId,
+      'user_id': userId,
+    };
 
-Future<String> deviceConnected(String deviceId, String userId) async {
-  final response = await Dio().post(
-    'https://50f0-138-199-60-167.ap.ngrok.io/devices/connected',
-    data: {
-      'device': deviceId,
-      'user': userId,
-    },
-  );
-  print(response.data);
+    Dio dio = Dio();
+    dio.options.headers['Authorization'] = 'Bearer $accessToken';
+    final response = await dio.post(
+      ApiUrls().getConnectDeviceUrl(),
+      data: data,
+      // data: {
+      //   'device_id': deviceId,
+      //   'user_id': userId,
+      // }
+    );
+    //print(response.data);
 
-  switch (response.statusCode) {
-    case 200:
+    switch (response.statusCode) {
+      case 200:
 
-      //show Scaffold that the device is connected
-      Fluttertoast.showToast(
-        msg: "Device Connected",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+        //show Scaffold that the device is connected
+        Fluttertoast.showToast(
+          msg: "Device Connected",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
 
-      return response.data;
-      break;
-    case 400:
-      Fluttertoast.showToast(
-        msg: "Device not connected",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-      return response.data;
-      break;
-    case 500:
-      Fluttertoast.showToast(
-        msg: "Server Error",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-      return response.data;
-      break;
-    default:
-      Fluttertoast.showToast(
-        msg: "Server Error",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-      return response.data;
+      case 400:
+        Fluttertoast.showToast(
+          msg: "Device not connected",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+
+      case 500:
+        Fluttertoast.showToast(
+          msg: "Server Error",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+
+      default:
+        Fluttertoast.showToast(
+          msg: "Server Error",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+    }
+  }
+
+  void deviceDisconnected(int deviceId, int userId) async {
+    Map<String, dynamic> data = {
+      'device_id': deviceId,
+      'user_id': userId,
+    };
+    Dio dio = Dio();
+    dio.options.headers['Authorization'] = 'Bearer $accessToken';
+    final response = await dio.post(
+      ApiUrls().getDisconnectDeviceUrl(),
+      data: data,
+      // data: {
+      //   'device': deviceId,
+      //   'user': userId,
+      // }
+    );
+    print(response.data);
+
+    switch (response.statusCode) {
+      case 200:
+
+        //show Scaffold that the device is connected
+        Fluttertoast.showToast(
+          msg: "Device Disconnected",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+
+      case 400:
+        Fluttertoast.showToast(
+          msg: "Device not disconnected",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+
+      case 500:
+        Fluttertoast.showToast(
+          msg: "Server Error",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+
+      default:
+        Fluttertoast.showToast(
+          msg: "Server Error",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+    }
+  }
+
+  //function to post change state of enable_1, enable_2, enable_3 and enable_4 for each device
+  void enableState(int deviceId, bool enable_1, bool enable_2, bool enable_3,
+      bool enable_4) async {
+    print('deviceId: $deviceId');
+    print('enable_1: $enable_1');
+    Map<String, dynamic> data = {
+      'enable_1': enable_1,
+      'enable_2': enable_2,
+      'enable_3': enable_3,
+      'enable_4': enable_4,
+    };
+
+    print('data: $data');
+
+    Dio dio = Dio();
+    dio.options.headers['Authorization'] = 'Bearer $accessToken';
+    final response = await dio.post(
+      ApiUrls().getChangeDeviceStateUrl(),
+
+      data: data,
+      // data: {
+      //   'enable_1': enable_1,
+      //   'enable_2': enable_2,
+      //   'enable_3': enable_3,
+      //   'enable_4': enable_4,
+      // }
+    );
+
+    print(response.data);
+
+    switch (response.statusCode) {
+      case 200:
+
+        //show Scaffold that the device is connected
+        Fluttertoast.showToast(
+          msg: "Device State Changed",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+
+      case 400:
+        Fluttertoast.showToast(
+          msg: "Device not connected",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+
+      case 500:
+        Fluttertoast.showToast(
+          msg: "Server Error",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+
+      default:
+        Fluttertoast.showToast(
+          msg: "Server Error",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+    }
   }
 }
-
-

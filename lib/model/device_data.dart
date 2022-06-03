@@ -31,7 +31,7 @@ class DeviceData {
 
   });
   //integer id
-  final int id;
+  int id;
   String deviceId;
   String deviceName;
   String deviceType;

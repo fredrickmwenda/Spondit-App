@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:iot_app/dashboard.dart';
@@ -7,7 +6,6 @@ import 'package:iot_app/model/user.dart';
 import 'package:iot_app/utilities/api_urls.dart';
 import 'package:iot_app/utilities/user_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:velocity_x/velocity_x.dart';
 import '../constants/constants.dart';
 import 'package:http/http.dart' as http;
 
@@ -224,17 +222,18 @@ class _LoginScreenState extends State<LoginScreen> {
       //use dio to make the request
       await Dio()
           .post(
-            'https://1354-41-90-64-46.eu.ngrok.io/user/login',
+            ApiUrls().getLoginUrl(),
            data: data,)
           .then((response) async {
         //check the response
-        print(response.data);
 
         if (response.statusCode == 200) {
           print("success");
           //if success, create client object  and save it in shared preferences
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString("token", response.data["access_token"]);
+          //refresh token
+          prefs.setString("refresh_token", response.data["refresh_token"]);
           prefs.setString("email", response.data["email"]);
           prefs.setString("name", response.data["full_name"]);
           //get the user id as an int

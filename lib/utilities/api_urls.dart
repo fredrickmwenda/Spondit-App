@@ -1,19 +1,30 @@
 
 class ApiUrls{
+   var serverUrl = "https://23e8-41-90-68-217.eu.ngrok.io/";
 
-  final serverUrl = "https://cd6c-105-162-4-213.eu.ngrok.io";
-
-  String getLoginUrl(){
-    return serverUrl + "/user/login";
+  // get Login url
+  getLoginUrl() {
+    return serverUrl + "user/login";
   }
 
-  String getDevicesUrl(){
-    return serverUrl + "/devices/all";
+  //get device list url
+  getDeviceListUrl() {
+    return serverUrl + "devices/all";
   }
-  String getConnectedDevicesUrl(){
-    return serverUrl + "/devices/connected";
+
+  //connect device url
+  getConnectDeviceUrl() {
+    return serverUrl + "device/connection";
   }
-  String getProfileUrl(){
-    return serverUrl +"";
+
+  //disconnect device url
+  getDisconnectDeviceUrl() {
+    return serverUrl + "device/disconnection";
   }
+
+  //change device state
+  getChangeDeviceStateUrl() {
+    return serverUrl + "device/change-state";
+  }
+
 }
