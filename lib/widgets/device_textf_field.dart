@@ -4,13 +4,23 @@ class DeviceTextField extends StatefulWidget {
   final int maxLines;
   final String text;
   final ValueChanged<String> onChanged;
+  final TextInputType keyboardType;
+  //check if the textfield is enabled
+  final bool enabled;
+
+  //function to enable or disable the textfield
+  // final Function(bool) onEnableChanged;
 
   const DeviceTextField({
     Key? key,
     this.maxLines = 1,
 
+
     required this.text,
     required this.onChanged,
+    this.keyboardType = TextInputType.number,
+    required this.enabled,
+    // required this.onEnableChanged,
   }) : super(key: key);
 
   @override
@@ -42,6 +52,9 @@ class _TextFieldWidgetState extends State<DeviceTextField> {
           TextField(
             controller: controller,
             maxLines: widget.maxLines,
+            onChanged: widget.onChanged,
+            onSubmitted: (_) => FocusScope.of(context).unfocus(),
+            // enabled: false,
           ),
         ],
       );

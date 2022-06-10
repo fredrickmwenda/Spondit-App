@@ -1,13 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:iot_app/dashboard.dart';
 import 'package:iot_app/homepage.dart';
-import 'package:iot_app/model/user.dart';
 import 'package:iot_app/utilities/api_urls.dart';
-import 'package:iot_app/utilities/user_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/constants.dart';
-import 'package:http/http.dart' as http;
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -209,9 +206,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
-
-
   void _loginUser(String email, String password) async {
     //call the rest api
     Map<String, String> data = {
@@ -222,8 +216,9 @@ class _LoginScreenState extends State<LoginScreen> {
       //use dio to make the request
       await Dio()
           .post(
-            ApiUrls().getLoginUrl(),
-           data: data,)
+        ApiUrls().getLoginUrl(),
+        data: data,
+      )
           .then((response) async {
         //check the response
 
@@ -238,13 +233,15 @@ class _LoginScreenState extends State<LoginScreen> {
           prefs.setString("name", response.data["full_name"]);
           //get the user id as an int
           prefs.setInt("userId", response.data["id"]);
+          //get the user type as bool
+          prefs.setBool("is_normal", response.data["normal"]);
+          prefs.setBool("is_advanced", response.data["advanced"]);
           Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const HomePage(),
-                ),
-              ); 
-
+            context,
+            MaterialPageRoute(
+              builder: (context) => const HomePage(),
+            ),
+          );
         } else {
           print('here');
           showDialog(
@@ -263,7 +260,4 @@ class _LoginScreenState extends State<LoginScreen> {
 
     //_loginProcess();
   }
-
-
-
 }

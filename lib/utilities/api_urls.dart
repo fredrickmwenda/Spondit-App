@@ -1,6 +1,6 @@
 
 class ApiUrls{
-   var serverUrl = "https://23e8-41-90-68-217.eu.ngrok.io/";
+   var serverUrl = "https://e977-102-167-221-175.eu.ngrok.io/";
 
   // get Login url
   getLoginUrl() {

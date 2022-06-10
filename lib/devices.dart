@@ -32,6 +32,11 @@ class _DevicesState extends State<Devices> {
   //get integer user id from shared preferences
   int userId = 0;
 
+  //get boolean value from shared preferences
+  bool isNormal = false;
+  bool isAdvanced = false;
+
+
   // Future List of  devices with  null check
 
   final List<DeviceData> _devices = [];
@@ -107,6 +112,9 @@ class _DevicesState extends State<Devices> {
       accessToken = (prefs.getString('token') ?? '');
       //get int value of user id
       userId = prefs.getInt('userId')!;
+      //get boolean value of normal or advanced
+      isNormal = prefs.getBool('is_normal')!;
+      isAdvanced = prefs.getBool('is_advanced')!;
     });
   }
 
@@ -246,6 +254,8 @@ class _DevicesState extends State<Devices> {
                                               height: 5,
                                             ),
 
+
+
                                             Row(
                                               children: <Widget>[
                                                 const Text(
@@ -256,42 +266,48 @@ class _DevicesState extends State<Devices> {
                                                   ),
                                                 ),
 
-                                                Flexible(
-                                                    child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(5.0),
-                                                        //get data of the lane 3 from the models  and display  it in TextField
-                                                        child: DeviceTextField(
-                                                          text: _devices[index]
-                                                              .lane1,
-                                                          onChanged: (value) {
-                                                            setState(() {
+                                                 
+                                            if(isNormal == true)...[
+                                              Flexible(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(5),
+                                                  child: DeviceTextField(
+                                                    text: _devices[index].lane1,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        _devices[index].lane1 =
+                                                            value;
+                                                      });
+                                                    },
+                                                    enabled: false, 
+                                                  )
+                                                ),
+                                              ),
+                                            ]
+                                            else if(isAdvanced == true)...[
+                                              Flexible(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(5),
+                                                  child: DeviceTextField(
+                                                    text: _devices[index].lane1,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        _devices[index].lane1 =
+                                                            value;
+                                                      });
+                                                       _publish(
                                                               _devices[index]
-                                                                      .lane1 =
-                                                                  value;
+                                                                  .lane1,
+                                                            );
+                                                    },
+                                                    enabled: true, 
+                                                  )
+                                                ),
+                                              ),
 
-                                                              if (_devices[
-                                                                          index]
-                                                                      .enable_2 ==
-                                                                  true) {
-                                                                _publish(
-                                                                  _devices[
-                                                                          index]
-                                                                      .lane2,
-                                                                );
-                                                              }
-                                                            });
-                                                          },
-                                                        )
-                                                        // child: TextField(
-                                                        //   controller:
-                                                        //       frequencyControllerLane3,
-                                                        //   keyboardType:
-                                                        //       TextInputType
-                                                        //           .number,
-                                                        // )
-                                                        )),
+                                            ],
+
+
                                                 Expanded(
                                                     //
                                                     child: CupertinoSwitch(
@@ -375,37 +391,46 @@ class _DevicesState extends State<Devices> {
                                                   ),
                                                 ),
 
-                                                Flexible(
+                                                if(isNormal == true)...[
+                                                  Flexible(
                                                     child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(5.0),
-                                                        //get data of the lane 3 from the models  and display  it in TextField
-                                                        child: DeviceTextField(
-                                                          text: _devices[index]
-                                                              .lane2,
-                                                          onChanged: (value) {
-                                                            setState(() {
-                                                              _devices[index]
-                                                                      .lane2 =
-                                                                  value;
-                                                      
-                                                            });
+                                                      padding: const EdgeInsets.all(5),
+                                                      child: DeviceTextField(
+                                                        text: _devices[index].lane2,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            _devices[index].lane1 =
+                                                                value;
+                                                          });
+                                                        },
+                                                        enabled: false, 
+                                                      )
+                                                    ),
+                                                  ),
+                                                ]
+                                                else if(isAdvanced == true)...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(5),
+                                                      child: DeviceTextField(
+                                                        text: _devices[index].lane2,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            _devices[index].lane1 =
+                                                                value;
+                                                          });
+                                                          _publish(
+                                                                  _devices[index]
+                                                                      .lane2,
+                                                                );
+                                                        },
+                                                        enabled: true, 
+                                                      )
+                                                    ),
+                                                  ),
 
-                                                            _publish(
-                                                              _devices[index]
-                                                                  .lane2,
-                                                            );
+                                                ],
 
-                                                            //get new data of lane 2 and send it to the server
-                                                            // _lane2(
-                                                            //     _devices[index]
-                                                            //         .lane2);
-                                                        
-
-
-                                                          },
-                                                        ))),
                                                 Expanded(
                                                     //
                                                     child: CupertinoSwitch(
@@ -478,34 +503,46 @@ class _DevicesState extends State<Devices> {
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                Flexible(
-                                                    child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(5.0),
-                                                        //get data of the lane 3 from the models  and display  it in TextField
 
-                                                        child: DeviceTextField(
-                                                          text: _devices[index]
-                                                              .lane3,
-                                                          onChanged: (value) {
-                                                            setState(() {
-                                                              _devices[index]
-                                                                      .lane3 =
-                                                                  value;
-                                                              // if value is true then publish the lane 3 frequency to the topic
-                                                              // else publish the lane 3 frequency to the topic
-                                                              if (_devices[
-                                                                          index]
-                                                                      .enable_3 ==
-                                                                  true) {
-                                                                _publish(_devices[
-                                                                        index]
-                                                                    .lane3);
-                                                              }
-                                                            });
-                                                          },
-                                                        ))),
+                                                if(isNormal == true)...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(5),
+                                                      child: DeviceTextField(
+                                                        text: _devices[index].lane3,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            _devices[index].lane3 =
+                                                                value;
+                                                          });
+                                                        },
+                                                        enabled: false, 
+                                                      )
+                                                    ),
+                                                  ),
+                                                ]
+                                                else if(isAdvanced == true)...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(5),
+                                                      child: DeviceTextField(
+                                                        text: _devices[index].lane3,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            _devices[index].lane3 =
+                                                                value;
+                                                          });
+                                                          _publish(
+                                                                  _devices[index]
+                                                                      .lane3,
+                                                                );
+                                                        },
+                                                        enabled: true, 
+                                                      )
+                                                    ),
+                                                  ),
+
+                                                ],
 
                                                 Expanded(
                                                     //
@@ -578,32 +615,46 @@ class _DevicesState extends State<Devices> {
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                Flexible(
+                                                if(isNormal == true)...[
+                                                  Flexible(
                                                     child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(5.0),
-                                                        //get data of the lane 3 from the models  and display  it in TextField
-                                                        child: DeviceTextField(
-                                                          text: _devices[index]
-                                                              .lane4,
-                                                          onChanged: (value) {
-                                                            setState(() {
-                                                              _devices[index]
-                                                                      .lane4 =
-                                                                  value;
-                                                              // if value is true then publish the topic with the value of the lane 4
-                                                              if (_devices[
-                                                                          index]
-                                                                      .enable_4 ==
-                                                                  true) {
-                                                                _publish(_devices[
-                                                                        index]
-                                                                    .lane4);
-                                                              }
-                                                            });
-                                                          },
-                                                        ))),
+                                                      padding: const EdgeInsets.all(5),
+                                                      child: DeviceTextField(
+                                                        text: _devices[index].lane4,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            _devices[index].lane4 =
+                                                                value;
+                                                          });
+                                                        },
+                                                        enabled: false, 
+                                                      )
+                                                    ),
+                                                  ),
+                                                ]
+                                                else if(isAdvanced == true)...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(5),
+                                                      child: DeviceTextField(
+                                                        text: _devices[index].lane4,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            _devices[index].lane4 =
+                                                                value;
+                                                          });
+                                                          _publish(
+                                                                  _devices[index]
+                                                                      .lane4,
+                                                                );
+                                                        },
+                                                        enabled: true, 
+                                                      )
+                                                    ),
+                                                  ),
+
+                                                ],
+
                                                 Expanded(
                                                     //
                                                     child: CupertinoSwitch(
@@ -991,4 +1042,37 @@ class _DevicesState extends State<Devices> {
         break;
     }
   }
+
+
+
+  // _onLaneChanged(bool p1) {
+  //   // check if the user is normal or advanced
+  //   if (isNormal == true) {
+  //     // set the textfield as readonly
+      
+  //     setState(() {
+  //       // set the textfield as readonly
+  //       lane1 = p1;
+
+  //     });
+       
+
+
+  //   } else {
+  //     // if the user is advanced user
+  //     // check if the lane is changed
+  //     if (p1 != _lane1) {
+  //       // if the lane is changed
+  //       // change the lane
+  //       setState(() {
+  //         _lane1 = p1;
+  //       });
+  //     }
+  //   }
+  // }
 }
+
+
+
+
+
