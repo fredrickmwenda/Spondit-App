@@ -36,7 +36,6 @@ class _DevicesState extends State<Devices> {
   bool isNormal = false;
   bool isAdvanced = false;
 
-
   // Future List of  devices with  null check
 
   final List<DeviceData> _devices = [];
@@ -254,8 +253,6 @@ class _DevicesState extends State<Devices> {
                                               height: 5,
                                             ),
 
-
-
                                             Row(
                                               children: <Widget>[
                                                 const Text(
@@ -266,47 +263,65 @@ class _DevicesState extends State<Devices> {
                                                   ),
                                                 ),
 
-                                                 
-                                            if(isNormal == true)...[
-                                              Flexible(
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(5),
-                                                  child: DeviceTextField(
-                                                    text: _devices[index].lane1,
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        _devices[index].lane1 =
-                                                            value;
-                                                      });
-                                                    },
-                                                    enabled: false, 
-                                                  )
-                                                ),
-                                              ),
-                                            ]
-                                            else if(isAdvanced == true)...[
-                                              Flexible(
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(5),
-                                                  child: DeviceTextField(
-                                                    text: _devices[index].lane1,
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        _devices[index].lane1 =
-                                                            value;
-                                                      });
-                                                       _publish(
+                                                if (isNormal == true) ...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane1,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane1 =
+                                                                  value;
+                                                            },
+                                                            
+                                                            );
+                                                          },
+                                                          enabled: false,
+                                                        )),
+                                                  ),
+                                                ] else if (isAdvanced ==
+                                                    true) ...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane1,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane1 =
+                                                                  value;
+                                                            });
+                                                            updateLane(
+                                                              index,
+                                                              _devices[index]
+                                                                  .lane2,
+                                                              _devices[index]
+                                                                  .lane3,
+                                                              _devices[index].lane4,
+                                                              _devices[index]
+                                                                  .lane1 = value,
+                                                              
+
+                                                            );
+                                                            //update lane function
+                                                            _publish(
                                                               _devices[index]
                                                                   .lane1,
                                                             );
-                                                    },
-                                                    enabled: true, 
-                                                  )
-                                                ),
-                                              ),
-
-                                            ],
-
+                                                          },
+                                                          enabled: true,
+                                                        )),
+                                                  ),
+                                                ],
 
                                                 Expanded(
                                                     //
@@ -329,47 +344,39 @@ class _DevicesState extends State<Devices> {
                                                           _devices[i].enable_4 =
                                                               false;
                                                         }
-                                                        //call the function to update the device status
 
+                                                        //call the enableState function to update the device status with the new setState values
+                                                        enableState(
+                                                          i,
+                                                          _devices[i].enable_1,
+                                                          _devices[i].enable_2,
+                                                          _devices[i].enable_3,
+                                                          _devices[i].enable_4,
+                                                        );
                                                       }
                                                     });
-                                                    // state
-                                                    //function to send  enable status to the server
-                                                    // enableState(
-                                                    //      index,
-                                                    //       _devices[index]
-                                                    //           .enable_1,                                                 
-                                                    //     _devices[index]
-                                                    //         .enable_2,
-                                                    //     _devices[index].enable_3,
-                                                    //     _devices[index]
-                                                    //         .enable_4,
-
-                                                    // );
                                                     if (_devices[index]
                                                             .enable_1 ==
                                                         true) {
-
-                                                      client.subscribe(topic1, MqttQos.atLeastOnce);
+                                                      client.subscribe(topic1,
+                                                          MqttQos.atLeastOnce);
 
                                                       Fluttertoast.showToast(
-                                                          msg: "Subscribed to " +
-                                                              topic1,
-                                                          toastLength:
-                                                              Toast.LENGTH_SHORT,
-                                                          gravity:
-                                                              ToastGravity.BOTTOM,
+                                                          msg:
+                                                              "Subscribed to " +
+                                                                  topic1,
+                                                          toastLength: Toast
+                                                              .LENGTH_SHORT,
+                                                          gravity: ToastGravity
+                                                              .BOTTOM,
                                                           backgroundColor:
                                                               Colors.blue,
                                                           textColor:
                                                               Colors.white,
-                                                          fontSize: 16.0
-                                                        );
-
+                                                          fontSize: 16.0);
                                                     }
 
-
-                                                    
+                                   
                                                     // client.subscribe(topic,
                                                     //     MqttQos.atLeastOnce);
                                                   },
@@ -391,44 +398,68 @@ class _DevicesState extends State<Devices> {
                                                   ),
                                                 ),
 
-                                                if(isNormal == true)...[
+                                                if (isNormal == true) ...[
                                                   Flexible(
                                                     child: Padding(
-                                                      padding: const EdgeInsets.all(5),
-                                                      child: DeviceTextField(
-                                                        text: _devices[index].lane2,
-                                                        onChanged: (value) {
-                                                          setState(() {
-                                                            _devices[index].lane1 =
-                                                                value;
-                                                          });
-                                                        },
-                                                        enabled: false, 
-                                                      )
-                                                    ),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane2,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane1 =
+                                                                  value;
+                                                            });
+                                                          },
+                                                          enabled: false,
+                                                        )),
                                                   ),
-                                                ]
-                                                else if(isAdvanced == true)...[
+                                                ] else if (isAdvanced ==
+                                                    true) ...[
                                                   Flexible(
                                                     child: Padding(
-                                                      padding: const EdgeInsets.all(5),
-                                                      child: DeviceTextField(
-                                                        text: _devices[index].lane2,
-                                                        onChanged: (value) {
-                                                          setState(() {
-                                                            _devices[index].lane1 =
-                                                                value;
-                                                          });
-                                                          _publish(
-                                                                  _devices[index]
-                                                                      .lane2,
-                                                                );
-                                                        },
-                                                        enabled: true, 
-                                                      )
-                                                    ),
-                                                  ),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane2,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane2 =
+                                                                  value;
 
+                                                                
+                                                            });
+                                                            //update lane function
+                                                            updateLane(
+                                                              index,
+                                                              _devices[index]
+                                                                  .lane2 = value,
+                                                              _devices[index]
+                                                                  .lane3,
+                                                              _devices[index].lane4,
+                                                              _devices[index]
+                                                                  .lane1,
+                                                              
+
+                                                            );
+                                          
+                                                           
+                                                            
+
+                                                            _publish(
+                                                              _devices[index]
+                                                                  .lane2,
+                                                            );
+                                                          },
+                                                          enabled: true,
+                                                        )),
+                                                  ),
                                                 ],
 
                                                 Expanded(
@@ -455,31 +486,43 @@ class _DevicesState extends State<Devices> {
                                                               false;
                                                           _devices[i].enable_4 =
                                                               false;
-                                                            
-                                                            //store the device status
 
-                                                        }                                                       
-                         
+                                                          //
+
+                                                        }
+                                                        //call the enableState function to update the device status with the new setState values
+                                                        enableState(
+                                                          i,
+                                                          _devices[i].enable_1,
+                                                          _devices[i].enable_2,
+                                                          _devices[i].enable_3,
+                                                          _devices[i].enable_4,
+                                                        );
                                                       }
-
                                                     });
 
                                                     //Subscribe  to topic with deviceName
                                                     //if _devices[index].enable_2 is true
                                                     //then call the function to publish the status of the lane 2
-                                                    if(_devices[index].enable_2 == true){
+                                                    if (_devices[index]
+                                                            .enable_2 ==
+                                                        true) {
                                                       client.subscribe(topic2,
                                                           MqttQos.atLeastOnce);
                                                       //notify that they are subscribed to the topic
-                                                       Fluttertoast.showToast(
-                                                          msg: "Subscribed to " +
-                                                              topic2,
-                                                          toastLength: Toast.LENGTH_SHORT,
-                                                          gravity: ToastGravity.BOTTOM,                                                          
-                                                          backgroundColor: Colors.green,
-                                                          textColor: Colors.white,
+                                                      Fluttertoast.showToast(
+                                                          msg:
+                                                              "Subscribed to " +
+                                                                  topic2,
+                                                          toastLength: Toast
+                                                              .LENGTH_SHORT,
+                                                          gravity: ToastGravity
+                                                              .BOTTOM,
+                                                          backgroundColor:
+                                                              Colors.green,
+                                                          textColor:
+                                                              Colors.white,
                                                           fontSize: 16.0);
-
                                                     }
 
                                                     // client.subscribe(topic1,
@@ -504,44 +547,65 @@ class _DevicesState extends State<Devices> {
                                                   ),
                                                 ),
 
-                                                if(isNormal == true)...[
+                                                if (isNormal == true) ...[
                                                   Flexible(
                                                     child: Padding(
-                                                      padding: const EdgeInsets.all(5),
-                                                      child: DeviceTextField(
-                                                        text: _devices[index].lane3,
-                                                        onChanged: (value) {
-                                                          setState(() {
-                                                            _devices[index].lane3 =
-                                                                value;
-                                                          });
-                                                        },
-                                                        enabled: false, 
-                                                      )
-                                                    ),
-                                                  ),
-                                                ]
-                                                else if(isAdvanced == true)...[
-                                                  Flexible(
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.all(5),
-                                                      child: DeviceTextField(
-                                                        text: _devices[index].lane3,
-                                                        onChanged: (value) {
-                                                          setState(() {
-                                                            _devices[index].lane3 =
-                                                                value;
-                                                          });
-                                                          _publish(
-                                                                  _devices[index]
-                                                                      .lane3,
-                                                                );
-                                                        },
-                                                        enabled: true, 
-                                                      )
-                                                    ),
-                                                  ),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane3,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane3 =
+                                                                  value;
+                                                            },
+                                                            
+                                                            );
 
+                                                          },
+                                                          enabled: false,
+                                                        )),
+                                                  ),
+                                                ] else if (isAdvanced ==
+                                                    true) ...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane3,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane3 =
+                                                                  value;
+                                                            });
+
+                                                            updateLane(
+                                                              index,
+                                                              _devices[index]
+                                                                  .lane2,
+                                                              _devices[index]
+                                                                  .lane3 = value,
+                                                              _devices[index].lane4,
+                                                              _devices[index]
+                                                                  .lane1,
+                                                              
+
+                                                            );
+                                                            _publish(
+                                                              _devices[index]
+                                                                  .lane3,
+                                                            );
+                                                          },
+                                                          enabled: true,
+                                                        )),
+                                                  ),
                                                 ],
 
                                                 Expanded(
@@ -576,27 +640,47 @@ class _DevicesState extends State<Devices> {
                                                                         .enable_4 =
                                                                     false;
                                                               }
+                                                              //call the enableState function to update the device status with the new setState values
+                                                              enableState(
+                                                                i,
+                                                                _devices[i]
+                                                                    .enable_1,
+                                                                _devices[i]
+                                                                    .enable_2,
+                                                                _devices[i]
+                                                                    .enable_3,
+                                                                _devices[i]
+                                                                    .enable_4,
+                                                              );
+
                                                             }
                                                           });
                                                           // updateState();
-                                                          if(_devices[index].enable_3 == true){
-                                                            client.subscribe(topic3,
-                                                                MqttQos.atLeastOnce);
+                                                          if (_devices[index]
+                                                                  .enable_3 ==
+                                                              true) {
+                                                            client.subscribe(
+                                                                topic3,
+                                                                MqttQos
+                                                                    .atLeastOnce);
                                                             //notify that they are subscribed to the topic
                                                             Fluttertoast.showToast(
-                                                                msg: "Subscribed to " +
-                                                                    topic3,
-                                                                toastLength:
-                                                                    Toast.LENGTH_SHORT,
+                                                                msg:
+                                                                    "Subscribed to " +
+                                                                        topic3,
+                                                                toastLength: Toast
+                                                                    .LENGTH_SHORT,
                                                                 gravity:
-                                                                    ToastGravity.BOTTOM,
+                                                                    ToastGravity
+                                                                        .BOTTOM,
                                                                 backgroundColor:
-                                                                    Colors.green,
+                                                                    Colors
+                                                                        .green,
                                                                 textColor:
-                                                                    Colors.white,
+                                                                    Colors
+                                                                        .white,
                                                                 fontSize: 16.0);
                                                           }
-  
                                                         })),
                                                 //CupertinoSwitch to enable/disable the lane 1
                                               ],
@@ -615,44 +699,61 @@ class _DevicesState extends State<Devices> {
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                if(isNormal == true)...[
+                                                if (isNormal == true) ...[
                                                   Flexible(
                                                     child: Padding(
-                                                      padding: const EdgeInsets.all(5),
-                                                      child: DeviceTextField(
-                                                        text: _devices[index].lane4,
-                                                        onChanged: (value) {
-                                                          setState(() {
-                                                            _devices[index].lane4 =
-                                                                value;
-                                                          });
-                                                        },
-                                                        enabled: false, 
-                                                      )
-                                                    ),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane4,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane4 =
+                                                                  value;
+                                                            });
+                                                          },
+                                                          enabled: false,
+                                                        )),
                                                   ),
-                                                ]
-                                                else if(isAdvanced == true)...[
+                                                ] else if (isAdvanced ==
+                                                    true) ...[
                                                   Flexible(
                                                     child: Padding(
-                                                      padding: const EdgeInsets.all(5),
-                                                      child: DeviceTextField(
-                                                        text: _devices[index].lane4,
-                                                        onChanged: (value) {
-                                                          setState(() {
-                                                            _devices[index].lane4 =
-                                                                value;
-                                                          });
-                                                          _publish(
-                                                                  _devices[index]
-                                                                      .lane4,
-                                                                );
-                                                        },
-                                                        enabled: true, 
-                                                      )
-                                                    ),
-                                                  ),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane4,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane4 =
+                                                                  value;
+                                                            });
+                                                            updateLane(
+                                                              index,
+                                                              _devices[index]
+                                                                  .lane2,
+                                                              _devices[index]
+                                                                  .lane3 ,
+                                                              _devices[index].lane4= value,
+                                                              _devices[index]
+                                                                  .lane1,
+                                                              
 
+                                                            );
+                                                            _publish(
+                                                              _devices[index]
+                                                                  .lane4,
+                                                            );
+                                                          },
+                                                          enabled: true,
+                                                        )),
+                                                  ),
                                                 ],
 
                                                 Expanded(
@@ -677,19 +778,29 @@ class _DevicesState extends State<Devices> {
                                                           _devices[i].enable_3 =
                                                               false;
                                                         }
+                                                        enableState(
+                                                          i,
+                                                          _devices[i].enable_1,
+                                                          _devices[i].enable_2,
+                                                          _devices[i].enable_3,
+                                                          _devices[i].enable_4,
+                                                        );
                                                       }
                                                     });
-                                                    if(_devices[index].enable_4 == true){
+                                                    if (_devices[index]
+                                                            .enable_4 ==
+                                                        true) {
                                                       client.subscribe(topic4,
                                                           MqttQos.atLeastOnce);
                                                       //notify that they are subscribed to the topic
                                                       Fluttertoast.showToast(
-                                                          msg: "Subscribed to " +
-                                                              topic4,
-                                                          toastLength:
-                                                              Toast.LENGTH_SHORT,
-                                                          gravity:
-                                                              ToastGravity.BOTTOM,
+                                                          msg:
+                                                              "Subscribed to " +
+                                                                  topic4,
+                                                          toastLength: Toast
+                                                              .LENGTH_SHORT,
+                                                          gravity: ToastGravity
+                                                              .BOTTOM,
                                                           backgroundColor:
                                                               Colors.green,
                                                           textColor:
@@ -839,8 +950,6 @@ class _DevicesState extends State<Devices> {
 
     switch (response.statusCode) {
       case 200:
-
-        //show Scaffold that the device is connected
         Fluttertoast.showToast(
           msg: "Device Connected",
           toastLength: Toast.LENGTH_SHORT,
@@ -961,10 +1070,7 @@ class _DevicesState extends State<Devices> {
   }
 
   //function to post change state of enable_1, enable_2, enable_3 and enable_4 for each device
-  void enableState(int deviceId, bool enable_1, bool enable_2, bool enable_3,
-      bool enable_4) async {
-    print('deviceId: $deviceId');
-    print('enable_1: $enable_1');
+  void enableState(int deviceId, bool enable_1, bool enable_2, bool enable_3, bool enable_4) async {
     Map<String, dynamic> data = {
       'enable_1': enable_1,
       'enable_2': enable_2,
@@ -1043,20 +1149,98 @@ class _DevicesState extends State<Devices> {
     }
   }
 
+  void updateLane(int deviceId, String lane_1, String lane_2, String lane_3, String lane_4) async {
+    Map<String, dynamic> data = {
+      'lane_1': lane_1,
+      'lane_2': lane_2,
+      'lane_3': lane_3,
+      'lane_4': lane_4,
 
+      // 'enable_3': enable_3,
+      // 'enable_4': enable_4,
+    };
+
+    print('data: $data');
+
+    Dio dio = Dio();
+    dio.options.headers['Authorization'] = 'Bearer $accessToken';
+    final response = await dio.post(
+      ApiUrls().getChangeLaneUrl(),
+
+      data: data,
+      // data: {
+      //   'enable_1': enable_1,
+      //   'enable_2': enable_2,
+      //   'enable_3': enable_3,
+      //   'enable_4': enable_4,
+      // }
+    );
+
+    print(response.data);
+
+    switch (response.statusCode) {
+      case 200:
+
+        //show Scaffold that the device is connected
+        Fluttertoast.showToast(
+          msg: "Device State Changed",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+
+      case 400:
+        Fluttertoast.showToast(
+          msg: "Device not connected",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+
+      case 500:
+        Fluttertoast.showToast(
+          msg: "Server Error",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+
+      default:
+        Fluttertoast.showToast(
+          msg: "Server Error",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        break;
+    }
+  }
 
   // _onLaneChanged(bool p1) {
   //   // check if the user is normal or advanced
   //   if (isNormal == true) {
   //     // set the textfield as readonly
-      
+
   //     setState(() {
   //       // set the textfield as readonly
   //       lane1 = p1;
 
   //     });
-       
-
 
   //   } else {
   //     // if the user is advanced user
@@ -1071,8 +1255,3 @@ class _DevicesState extends State<Devices> {
   //   }
   // }
 }
-
-
-
-
-

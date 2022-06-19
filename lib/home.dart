@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iot_app/dashboard.dart';
 import 'package:iot_app/devices.dart';
+import 'package:iot_app/notification.dart';
 import 'package:iot_app/profile.dart';
 
 class Home extends StatefulWidget {
@@ -13,7 +14,8 @@ class _HomeState extends State<Home> {
   final widgetOptions = [
     const DashboardPage(),
     Devices(),
-    ProfileScreen()
+    const Notifications(),
+    const ProfileScreen()
 
   ];
 
@@ -45,6 +47,11 @@ class _HomeState extends State<Home> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.category),
                 label: 'Devices',
+              ),
+
+              BottomNavigationBarItem(
+                icon: Icon(Icons.notifications),
+                label: 'Notifications',
               ),
 
               BottomNavigationBarItem(

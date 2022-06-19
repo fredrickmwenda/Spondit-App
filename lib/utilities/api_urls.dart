@@ -1,6 +1,5 @@
-
-class ApiUrls{
-   var serverUrl = "https://e977-102-167-221-175.eu.ngrok.io/";
+class ApiUrls {
+  var serverUrl = "https://e977-102-167-221-175.eu.ngrok.io/";
 
   // get Login url
   getLoginUrl() {
@@ -27,4 +26,12 @@ class ApiUrls{
     return serverUrl + "device/change-state";
   }
 
+  //get notifications
+  getNotificationsUrl() {
+    return serverUrl + "user/notifications";
+  }
+ 
+  getChangeLaneUrl() {
+    return serverUrl + "device/lane";
+  }
 }
