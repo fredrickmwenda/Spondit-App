@@ -34,4 +34,9 @@ class ApiUrls {
   getChangeLaneUrl() {
     return serverUrl + "device/lane";
   }
+
+  //reset password url
+  getResetPasswordUrl() {
+    return serverUrl + "user/reset-password";
+  }
 }
