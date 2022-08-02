@@ -10,6 +10,11 @@ class DeviceData {
     required this.lane2,
     required this.lane3,
     required this.lane4,
+    //lane 5 is not required use null safety
+    required this.lane5,
+    required this.lane6,
+    required this.lane7,
+    required this.lane8,
 
 
     //Add float latitude
@@ -26,6 +31,10 @@ class DeviceData {
     required this.enable_2,
     required this.enable_3,
     required this.enable_4,
+    required this.enable_5,
+    required this.enable_6,
+    required this.enable_7,
+    required this.enable_8,
     required this.state,
     required this.city,
 
@@ -39,6 +48,10 @@ class DeviceData {
   String lane2;
   String lane3;
   String lane4;
+  String lane5;
+  String lane6;
+  String lane7;
+
   //Add float latitude
   double latitude;
   //Add float longitude
@@ -52,6 +65,10 @@ class DeviceData {
   bool enable_2;
   bool enable_3;
   bool enable_4;
+  bool enable_5;
+  bool enable_6;
+  bool enable_7;
+  bool enable_8;
   String state;
   String city;
 
@@ -63,6 +80,7 @@ class DeviceData {
         lane2: json["lane_2"],
         lane3: json["lane_3"],
         lane4: json["lane_4"],
+        
         deviceId: json["device_id"],
         latitude: json["latitude"],
         longitude: json["longitude"],

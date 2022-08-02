@@ -12,6 +12,36 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+
+
+  @override
+  void initState() {
+    //first load shared preferences
+    loadSharedPreferences();
+    super.initState();
+
+    //clall the function to get the user connected devices
+    getUserConnectedDevices();
+    
+
+
+  }
+
+
+
+
+
+  //chart on total devices a user is connected to
+  List<DeviceConnection> _deviceConnections = [];
+  List<double> _data = [
+    0.0, 1.0, 1.5, 2.0, 0.0, 0.0, -0.5, -1.0, -0.5, 0.0, 0.0];
+
+
+  //chart on total connections a user has made
+  List<DeviceConnection> _deviceConnections2 = [];
+  //get 
+  List<double> _data2 = [
+    0.0, 1.0, 1.5, 2.0, 0.0, 0.0, -0.5, -1.0, -0.5, 0.0, 0.0];
   final List<List<double>> charts = [
     [
       0.0,
@@ -244,6 +274,7 @@ class _DashboardPageState extends State<DashboardPage> {
      // _name = (sharedPreferences.getString('_fullName') ?? '');
      //get user name from shared preferences
       _name = (sharedPreferences.getString('name') ?? '');
+      _id = (sharedPreferences.getString('userId') ?? '');
       print(_name);
 
      
@@ -517,7 +548,8 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildConnectedDevices() {
-    var connectedDevices = addDevices();
+    //conneceted devices list using the list of devices from the userDevices API call
+    var connectedDevices = getUserDevices(String userId);
     return Container(
       height: MediaQuery.of(context).size.height * 0.3,
       alignment: Alignment.centerLeft,
@@ -544,7 +576,8 @@ class _DashboardPageState extends State<DashboardPage> {
                     height: MediaQuery.of(context).size.height * 0.1,
                     width: MediaQuery.of(context).size.width * 0.3,
                     child: const Text(
-                      'firstName',
+                      //use deviceid to get the device name from the device API call
+                      connectedDevices[index].deviceId.deviceName,
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -570,16 +603,75 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 }
+//fetch the devices a user has connected via Rest API pass the userId to the API call
+//and get the list of devices connected to the 
+//user from the API call
 
-List<DeviceConnection> addDevices() {
-  List<DeviceConnection> devices = [];
-  // for (int i = 0; i < 10; i++) {
-  //   devices.add(DeviceConnection(
-  //       name: 'Device $i',
-  //       status: i % 2 == 0 ? 'Connected' : 'Disconnected',
-  //       image: i % 2 == 0
-  //           ? 'assets/images/device_connected.png'
-  //           : 'assets/images/device_disconnected.png'));
-  // }
-  return devices;
+Future <List<UserDevice>> getUserDevices(String userId) async {
+  //make two api calls one to get all Devices the other to get  user Devices
+
+  Map<String, dynamic> data = {   
+    'user_id': userId,
+  };
+   final result = await Future.wait([
+    Dio dio = Dio();
+    dio.options.headers['Authorization'] = 'Bearer $accessToken';
+
+    dio.get(ApiUrls().getDeviceListUrl()).then((response) {
+      if  (response.statusCode == 200) {
+        print(response.data);
+        return response.data;
+      } else {
+        print(response.statusCode);
+        return null;
+      }
+      print(response.data);
+    });
+
+    dio.get(ApiUrls().getUserConnectedDevicesUrl(), data: data ).then((response) {
+      if  (response.statusCode == 200) {
+        print(response.data);
+        return response.data;
+      } else {
+        print(response.statusCode);
+        return null;
+      }
+      print(response.data);
+    });
+
+
+   ]);
+
+
+
+    final result1 = json.decode(result[0]);
+    final result2 = json.decode(result[1]);
+
+    List<Device> devices = [];
+
+    for (var i = 0; i < result1.length; i++) {
+      devices.add(Device.fromJson(result1[i]));
+    }
+    List<UserDevice> userDevices = [];
+    for (var i = 0; i < result[1].length; i++) {
+      userDevices.add(UserDevice.fromJson(result2[i]));
+    }
+
+    //get the deviceId from the userDevices list and use it to get the device name from the devices list
+    for (var i = 0; i < userDevices.length; i++) {
+      for (var j = 0; j < devices.length; j++) {
+        if (userDevices[i].deviceId == devices[j].deviceId) {
+          //get that device properties and assign it to the userDevices list
+          userDevices[i].deviceName = devices[j].deviceName;
+          userDevices[i].image = devices[j].image;
+      
+
+        }
+      }
+    }
+
+    return userDevices, devices;
+    //
 }
+
+

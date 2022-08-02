@@ -3,6 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iot_app/model/device_data.dart';
 import 'package:iot_app/utilities/api_urls.dart';
+import 'package:iot_app/utilities/constants.dart';
+import 'package:iot_app/utilities/device_data_helper.dart';
+import 'package:iot_app/utilities/device_helper.dart';
+
+import 'package:iot_app/widgets/toaster.dart';
+
 
 import 'package:iot_app/utilities/mqtt_client.dart';
 import 'package:iot_app/widgets/device_textf_field.dart';
@@ -355,26 +361,16 @@ class _DevicesState extends State<Devices> {
                                                         );
                                                       }
                                                     });
-                                                    if (_devices[index]
-                                                            .enable_1 ==
-                                                        true) {
-                                                      client.subscribe(topic1,
-                                                          MqttQos.atLeastOnce);
+                                                    if (_devices[index].enable_1 ==true) 
+                                                    {
+                                                      client.subscribe(topic1, MqttQos.atLeastOnce);
 
-                                                      Fluttertoast.showToast(
-                                                          msg:
-                                                              "Subscribed to " +
-                                                                  topic1,
-                                                          toastLength: Toast
-                                                              .LENGTH_SHORT,
-                                                          gravity: ToastGravity
-                                                              .BOTTOM,
-                                                          backgroundColor:
-                                                              Colors.blue,
-                                                          textColor:
-                                                              Colors.white,
-                                                          fontSize: 16.0);
+                                                        //import Toaster from toaster widget
+                                                      Toaster("subscribed to $topic1");
                                                     }
+                                                   
+
+
 
                                    
                                                     // client.subscribe(topic,
@@ -497,6 +493,8 @@ class _DevicesState extends State<Devices> {
                                                           _devices[i].enable_2,
                                                           _devices[i].enable_3,
                                                           _devices[i].enable_4,
+                                                          //check if enable_5, enable_6 are present
+                                                          
                                                         );
                                                       }
                                                     });
@@ -504,25 +502,12 @@ class _DevicesState extends State<Devices> {
                                                     //Subscribe  to topic with deviceName
                                                     //if _devices[index].enable_2 is true
                                                     //then call the function to publish the status of the lane 2
-                                                    if (_devices[index]
-                                                            .enable_2 ==
-                                                        true) {
-                                                      client.subscribe(topic2,
-                                                          MqttQos.atLeastOnce);
-                                                      //notify that they are subscribed to the topic
-                                                      Fluttertoast.showToast(
-                                                          msg:
-                                                              "Subscribed to " +
-                                                                  topic2,
-                                                          toastLength: Toast
-                                                              .LENGTH_SHORT,
-                                                          gravity: ToastGravity
-                                                              .BOTTOM,
-                                                          backgroundColor:
-                                                              Colors.green,
-                                                          textColor:
-                                                              Colors.white,
-                                                          fontSize: 16.0);
+
+
+                                                  if (_devices[index].enable_2 ==true) 
+                                                    {
+                                                      client.subscribe(topic2, MqttQos.atLeastOnce);
+                                                      Toaster("subscribed to $topic2");
                                                     }
 
                                                     // client.subscribe(topic1,
@@ -656,31 +641,11 @@ class _DevicesState extends State<Devices> {
                                                             }
                                                           });
                                                           // updateState();
-                                                          if (_devices[index]
-                                                                  .enable_3 ==
-                                                              true) {
-                                                            client.subscribe(
-                                                                topic3,
-                                                                MqttQos
-                                                                    .atLeastOnce);
-                                                            //notify that they are subscribed to the topic
-                                                            Fluttertoast.showToast(
-                                                                msg:
-                                                                    "Subscribed to " +
-                                                                        topic3,
-                                                                toastLength: Toast
-                                                                    .LENGTH_SHORT,
-                                                                gravity:
-                                                                    ToastGravity
-                                                                        .BOTTOM,
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .green,
-                                                                textColor:
-                                                                    Colors
-                                                                        .white,
-                                                                fontSize: 16.0);
-                                                          }
+                                                  if (_devices[index].enable_3 ==true) 
+                                                    {
+                                                      client.subscribe(topic3, MqttQos.atLeastOnce);
+                                                      Toaster("subscribed to $topic3");
+                                                    }
                                                         })),
                                                 //CupertinoSwitch to enable/disable the lane 1
                                               ],
@@ -787,25 +752,10 @@ class _DevicesState extends State<Devices> {
                                                         );
                                                       }
                                                     });
-                                                    if (_devices[index]
-                                                            .enable_4 ==
-                                                        true) {
-                                                      client.subscribe(topic4,
-                                                          MqttQos.atLeastOnce);
-                                                      //notify that they are subscribed to the topic
-                                                      Fluttertoast.showToast(
-                                                          msg:
-                                                              "Subscribed to " +
-                                                                  topic4,
-                                                          toastLength: Toast
-                                                              .LENGTH_SHORT,
-                                                          gravity: ToastGravity
-                                                              .BOTTOM,
-                                                          backgroundColor:
-                                                              Colors.green,
-                                                          textColor:
-                                                              Colors.white,
-                                                          fontSize: 16.0);
+                                                  if (_devices[index].enable_4 ==true) 
+                                                    {
+                                                      client.subscribe(topic4, MqttQos.atLeastOnce);
+                                                      Toaster("subscribed to $topic4");
                                                     }
 
                                                     // client.subscribe(topic3,
@@ -816,9 +766,532 @@ class _DevicesState extends State<Devices> {
                                               ],
                                             ),
 
+
                                             const SizedBox(
                                               height: 5,
                                             ),
+
+                                            //check if _devices[index].lane_5 is not empty
+                                          // if condition is true, then show the lane 5 text field
+                                          if (_devices[index].lane5 !="") ...[
+                                            Row(
+                                              children: <Widget>[
+                                                const Text(
+                                                  "Lane 5: ",
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                if (isNormal == true) ...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane5,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane5 =
+                                                                  value;
+                                                            });
+                                                          },
+                                                          enabled: false,
+                                                        )),
+                                                  ),
+                                                ] else if (isAdvanced ==
+                                                    true) ...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane5,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane5 =
+                                                                  value;
+                                                            });
+                                                            updateLane(
+                                                              index,
+                                                              _devices[index]
+                                                                  .lane2,
+                                                              _devices[index]
+                                                                  .lane3 ,
+                                                              _devices[index].lane4,
+                                                              _devices[index]
+                                                                  .lane1,
+                                                              _devices[index].lane5= value,
+                                                              _devices[index]
+                                                                  .lane6,
+                                                              
+
+                                                            );
+                                                            _publish(
+                                                              _devices[index]
+                                                                  .lane5,
+                                                            );
+                                                          },
+                                                          enabled: true,
+                                                        )),
+                                                  ),
+                                                ],
+                                                Expanded(
+                                                    //
+                                                    child: CupertinoSwitch(
+                                                  value:
+                                                      _devices[index].enable_5,
+                                                  onChanged: (bool value) {
+                                                    setState(() {
+                                                      //updateStat(value, index);
+
+                                                      for (int i = 0;
+                                                          i < _devices.length;
+                                                          i++) {
+                                                        if (i == index) {
+                                                          _devices[i].enable_5 =
+                                                              value;
+                                                          _devices[i].enable_2 =
+                                                              false;
+                                                          _devices[i].enable_1 =
+                                                              false;
+                                                          _devices[i].enable_3 =
+                                                              false;
+                                                          _devices[i].enable_4 =
+                                                              false;
+                                                          _devices[i].enable_6 =
+                                                              false;
+                                                        }
+                                                        enableState(
+                                                          i,
+                                                          _devices[i].enable_1,
+                                                          _devices[i].enable_2,
+                                                          _devices[i].enable_3,
+                                                          _devices[i].enable_4,
+                                                          _devices[i].enable_5,
+                                                          _devices[i].enable_6,
+                                                        );
+                                                      }
+                                                    });
+                                                  if (_devices[index].enable_5 ==true) 
+                                                    {
+                                                      client.subscribe(topic5, MqttQos.atLeastOnce);
+                                                      Toaster("subscribed to $topic5");
+                                                    }
+                                                    // client.subscribe(topic4,
+                                                    //     MqttQos.atLeastOnce);
+                                                  },
+                                                )),
+                                                //CupertinoSwitch to enable/disable the lane 1
+                                              ],
+                                            ),
+
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                          ],
+
+                                            //check if _devices[index].lane_6 is not empty
+                                          // if condition is true, then show the lane 6 text field
+                                          if (_devices[index].lane6 !="") ...[
+                                            Row(
+                                              children: <Widget>[
+                                                const Text(
+                                                  "Lane 6: ",
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                if (isNormal == true) ...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane6,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane6 =
+                                                                  value;
+                                                            });
+                                                          },
+                                                          enabled: false,
+                                                        )),
+                                                  ),
+                                                ] else if (isAdvanced ==
+                                                    true) ...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane6,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane6 =
+                                                                  value;
+                                                            });
+                                                            updateLane(
+                                                              index,
+                                                              _devices[index]
+                                                                  .lane2,
+                                                              _devices[index]
+                                                                  .lane3 ,
+                                                              _devices[index].lane4,
+                                                              _devices[index]
+                                                                  .lane5,
+                                                              _devices[index]
+                                                                  .lane1,
+                                                              _devices[index].lane6= value,
+                                                              
+                                                            );
+                                                            _publish(
+                                                              _devices[index]
+                                                                  .lane6,
+                                                            );
+                                                          },
+                                                          enabled: true,
+                                                        )),
+                                                  ),
+                                                ],
+                                                Expanded(
+                                                    //
+                                                    child: CupertinoSwitch(
+                                                  value:
+                                                      _devices[index].enable_6,
+                                                  onChanged: (bool value) {
+                                                    setState(() {
+                                                      //updateStat(value, index);
+
+                                                      for (int i = 0;
+                                                          i < _devices.length;
+                                                          i++) {
+                                                        if (i == index) {
+                                                          _devices[i].enable_6 =
+                                                              value;
+                                                          _devices[i].enable_2 =
+                                                              false;
+                                                          _devices[i].enable_1 =
+                                                              false;
+                                                          _devices[i].enable_3 =
+                                                              false;
+                                                          _devices[i].enable_4 =
+                                                              false;
+                                                          _devices[i].enable_5 =
+                                                              false;
+                                                        }
+                                                        enableState(
+                                                          i,
+                                                          _devices[i].enable_1,
+                                                          _devices[i].enable_2,
+                                                          _devices[i].enable_3,
+                                                          _devices[i].enable_4,
+                                                          _devices[i].enable_5,
+                                                          _devices[i].enable_6,
+                                                        );
+                                                      }
+                                                    });
+                                                  if (_devices[index].enable_6 ==true) 
+                                                    {
+                                                      client.subscribe(topic6, MqttQos.atLeastOnce);
+                                                      Toaster("subscribed to $topic6");
+                                                    }
+                                                    // client.subscribe(topic4,
+                                                    //     MqttQos.atLeastOnce);
+                                                  },
+                                                )),
+                                                //CupertinoSwitch to enable/disable the lane 1
+                                              ],
+                                            ),
+                                          ],
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            //check if _devices[index].lane_7 is not empty
+                                          // if condition is true, then show the lane 7 text field
+                                          if (_devices[index].lane7 !="") ...[
+                                            Row(
+                                              children: <Widget>[
+                                                const Text(
+                                                  "Lane 7: ",
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                if (isNormal == true) ...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane7,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane7 =
+                                                                  value;
+                                                            });
+                                                          },
+                                                          enabled: false,
+                                                        )),
+                                                  ),
+                                                ] else if (isAdvanced ==
+                                                    true) ...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane7,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane7 =
+                                                                  value;
+                                                            });
+                                                            updateLane(
+                                                              index,
+                                                              _devices[index]
+                                                                  .lane2,
+                                                              _devices[index]
+                                                                  .lane3 ,
+                                                              _devices[index].lane4,
+                                                              _devices[index]
+                                                                  .lane5,
+                                                              _devices[index]
+                                                                  .lane1,
+                                                              _devices[index]
+                                                                  .lane6,
+                                                              _devices[index].lane7= value,
+                                                              _devices[index].lane8,
+                                                            );
+                                                            _publish(
+                                                              _devices[index]
+                                                                  .lane7,
+                                                            );
+                                                          },
+                                                          enabled: true,
+                                                        )),
+                                                  ),
+                                                ],
+                                                Expanded(
+                                                    //
+                                                    child: CupertinoSwitch(
+                                                  value:
+                                                      _devices[index].enable_7,
+                                                  onChanged: (bool value) {
+                                                    setState(() {
+                                                      //updateStat(value, index);
+
+                                                      for (int i = 0;
+                                                          i < _devices.length;
+                                                          i++) {
+                                                        if (i == index) {
+                                                          _devices[i].enable_7 =
+                                                              value;
+                                                          _devices[i].enable_2 =
+                                                              false;
+                                                          _devices[i].enable_1 =
+                                                              false;
+                                                          _devices[i].enable_3 =
+                                                              false;
+                                                          _devices[i].enable_4 =
+                                                              false;
+                                                          _devices[i].enable_5 =
+                                                              false;
+                                                          _devices[i].enable_6 =
+                                                              false;
+                                                          _devices[i].enable_8 =
+                                                              false;
+                                                        }
+                                                        enableState(
+                                                          i,
+                                                          _devices[i].enable_1,
+                                                          _devices[i].enable_2,
+                                                          _devices[i].enable_3,
+                                                          _devices[i].enable_4,
+                                                          _devices[i].enable_5,
+                                                          _devices[i].enable_6,
+                                                          _devices[i].enable_7,
+                                                          _devices[i].enable_8,
+                                                        );
+                                                      }
+                                                    });
+                                                  if (_devices[index].enable_7 ==true) 
+                                                    {
+                                                      client.subscribe(topic7, MqttQos.atLeastOnce);
+                                                      Toaster("subscribed to $topic7");
+                                                    }
+                                                    // client.subscribe(topic4,
+                                                    //     MqttQos.atLeastOnce);
+                                                  },
+                                                )),
+                                                //CupertinoSwitch to enable/disable the lane 1
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                          ],
+ 
+                                            //check if _devices[index].lane_8 is not empty
+                                          // if condition is true, then show the lane 8 text field
+                                          if (_devices[index].lane8 !="") ...[
+                                            Row(
+                                              children: <Widget>[
+                                                const Text(
+                                                  "Lane 8: ",
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                if (isNormal == true) ...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane8,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane8 =
+                                                                  value;
+                                                            });
+                                                          },
+                                                          enabled: false,
+                                                        )),
+                                                  ),
+                                                ] else if (isAdvanced ==
+                                                    true) ...[
+                                                  Flexible(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        child: DeviceTextField(
+                                                          text: _devices[index]
+                                                              .lane8,
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              _devices[index]
+                                                                      .lane8 =
+                                                                  value;
+                                                            });
+                                                            updateLane(
+                                                              index,
+                                                              _devices[index]
+                                                                  .lane2,
+                                                              _devices[index]
+                                                                  .lane3 ,
+                                                              _devices[index].lane4= value,
+                                                              _devices[index]
+                                                                  .lane5,
+                                                              _devices[index]
+                                                                  .lane1,
+                                                              _devices[index]
+                                                                  .lane6,
+                                                              _devices[index]
+                                                                  .lane7,
+                                                            );
+                                                            _publish(
+                                                              _devices[index]
+                                                                  .lane8,
+                                                            );
+                                                          },
+                                                          enabled: true,
+                                                        )),
+                                                  ),
+                                                ],
+                                                Expanded(
+                                                    //
+                                                    child: CupertinoSwitch(
+                                                  value:
+                                                      _devices[index].enable_8,
+                                                  onChanged: (bool value) {
+                                                    setState(() {
+                                                      //updateStat(value, index);
+                                                      for (int i = 0;
+                                                          i < _devices.length;
+                                                          i++) {
+                                                        if (i == index) {
+                                                          _devices[i].enable_8 =
+                                                              value;
+                                                          _devices[i].enable_2 =
+                                                              false;
+                                                          _devices[i].enable_1 =
+                                                              false;
+                                                          _devices[i].enable_3 =
+                                                              false;
+                                                          _devices[i].enable_4 =
+                                                              false;
+                                                          _devices[i].enable_5 =
+                                                              false;
+                                                          _devices[i].enable_6 =
+                                                              false;
+                                                          _devices[i].enable_7 =
+                                                              false;
+                                                        }
+                                                        enableState(
+                                                          i,
+                                                          _devices[i].enable_1,
+                                                          _devices[i].enable_2,
+                                                          _devices[i].enable_3,
+                                                          _devices[i].enable_4,
+                                                          _devices[i].enable_5,
+                                                          _devices[i].enable_6,
+                                                          _devices[i].enable_7,
+                                                          _devices[i].enable_8,
+                                                        );
+                                                      }
+                                                    });
+
+                                                  if (_devices[index].enable_8 ==true) 
+                                                    {
+                                                      client.subscribe(topic8, MqttQos.atLeastOnce);
+                                                      Toaster("subscribed to $topic8");
+                                                    }
+                                                    // client.subscribe(topic4,
+                                                    //     MqttQos.atLeastOnce);
+                                                  },
+                                                )),
+                                                //CupertinoSwitch to enable/disable the lane 1
+                                              ],
+                                            ),
+
+                                          const SizedBox(
+                                              height: 5,
+                                            ),
+                                          ],
+
+
+
+
+
+
+
+                                            
                                             //Row with CupertinoSwitch to enable/disable the device & state & city
                                             Row(
                                               children: <Widget>[
@@ -950,51 +1423,19 @@ class _DevicesState extends State<Devices> {
 
     switch (response.statusCode) {
       case 200:
-        Fluttertoast.showToast(
-          msg: "Device Connected",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Device connected");
         break;
 
       case 400:
-        Fluttertoast.showToast(
-          msg: "Device not connected",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Device already connected");
         break;
 
       case 500:
-        Fluttertoast.showToast(
-          msg: "Server Error",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Server error");
         break;
 
       default:
-        Fluttertoast.showToast(
-          msg: "Server Error",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Device not connected");
         break;
     }
   }
@@ -1018,53 +1459,19 @@ class _DevicesState extends State<Devices> {
 
     switch (response.statusCode) {
       case 200:
-
-        //show Scaffold that the device is connected
-        Fluttertoast.showToast(
-          msg: "Device Disconnected",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Device disconnected");
         break;
 
       case 400:
-        Fluttertoast.showToast(
-          msg: "Device not disconnected",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Device already disconnected");
         break;
 
       case 500:
-        Fluttertoast.showToast(
-          msg: "Server Error",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Server error");
         break;
 
       default:
-        Fluttertoast.showToast(
-          msg: "Server Error",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Device not disconnected");
         break;
     }
   }
@@ -1098,67 +1505,36 @@ class _DevicesState extends State<Devices> {
 
     switch (response.statusCode) {
       case 200:
-
-        //show Scaffold that the device is connected
-        Fluttertoast.showToast(
-          msg: "Device State Changed",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Device state changed");
         break;
 
       case 400:
-        Fluttertoast.showToast(
-          msg: "Device not connected",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Device state not changed");
         break;
 
       case 500:
-        Fluttertoast.showToast(
-          msg: "Server Error",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Server error");
         break;
 
       default:
-        Fluttertoast.showToast(
-          msg: "Server Error",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Device state not changed");
         break;
     }
   }
 
-  void updateLane(int deviceId, String lane_1, String lane_2, String lane_3, String lane_4) async {
+  void updateLane(int deviceId, String lane_1, String lane_2, String lane_3, String lane_4, 
+  String lane_5, String lane_6, String lane_7, String lane_7) async {
     Map<String, dynamic> data = {
       'lane_1': lane_1,
       'lane_2': lane_2,
       'lane_3': lane_3,
       'lane_4': lane_4,
-
-      // 'enable_3': enable_3,
-      // 'enable_4': enable_4,
+      'lane_5': lane_5,
+      'lane_6': lane_6,
+      'lane_7': lane_7,
+      'lane_8': lane_8,
     };
+
 
     print('data: $data');
 
@@ -1180,78 +1556,21 @@ class _DevicesState extends State<Devices> {
 
     switch (response.statusCode) {
       case 200:
-
-        //show Scaffold that the device is connected
-        Fluttertoast.showToast(
-          msg: "Device State Changed",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Lane changed");
         break;
 
       case 400:
-        Fluttertoast.showToast(
-          msg: "Device not connected",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Lane not changed");
         break;
 
       case 500:
-        Fluttertoast.showToast(
-          msg: "Server Error",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Server error");
         break;
 
       default:
-        Fluttertoast.showToast(
-          msg: "Server Error",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Toaster("Lane not changed");
         break;
     }
   }
 
-  // _onLaneChanged(bool p1) {
-  //   // check if the user is normal or advanced
-  //   if (isNormal == true) {
-  //     // set the textfield as readonly
-
-  //     setState(() {
-  //       // set the textfield as readonly
-  //       lane1 = p1;
-
-  //     });
-
-  //   } else {
-  //     // if the user is advanced user
-  //     // check if the lane is changed
-  //     if (p1 != _lane1) {
-  //       // if the lane is changed
-  //       // change the lane
-  //       setState(() {
-  //         _lane1 = p1;
-  //       });
-  //     }
-  //   }
-  // }
 }

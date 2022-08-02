@@ -39,4 +39,8 @@ class ApiUrls {
   getResetPasswordUrl() {
     return serverUrl + "user/reset-password";
   }
+  //get user connected devices url
+  getUserConnectedDevicesUrl() {
+    return serverUrl + "user/devices";
+  }
 }
